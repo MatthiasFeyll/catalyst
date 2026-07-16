@@ -1,0 +1,58 @@
+# OpenTelemetry collector — local base config. Receives Claude Code telemetry
+# (metrics + logs) and writes it to disk for offline analysis. No remote
+# exporters (the opt-in central egress overlay adds one — see the .central config).
+
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+      http:
+        endpoint: 0.0.0.0:4318
+
+processors:
+  batch:
+    timeout: 5s
+    send_batch_size: 256
+  # Drop attributes that could leak local identifiers if the trace file
+  # is ever shared. Keep model/cost/token attributes which are the
+  # whole point of the audit.
+  attributes/scrub:
+    actions:
+      - key: user.email
+        action: delete
+      - key: user.account_uuid
+        action: delete
+      - key: organization.id
+        action: delete
+
+exporters:
+  # Primary (and only) sink: append every metric + log to a JSONL file on disk.
+  # No `debug` exporter — echoing every batch to stdout makes the collector a
+  # firehose into Docker's (unbounded by default) container logs.
+  file/metrics:
+    path: /logs/otel-metrics.jsonl
+    rotation:
+      max_megabytes: 20
+      max_days: 7
+      max_backups: 3
+  file/logs:
+    path: /logs/otel-logs.jsonl
+    rotation:
+      max_megabytes: 20
+      max_days: 7
+      max_backups: 3
+
+service:
+  pipelines:
+    metrics:
+      receivers: [otlp]
+      processors: [attributes/scrub, batch]
+      exporters: [file/metrics]
+    logs:
+      receivers: [otlp]
+      processors: [attributes/scrub, batch]
+      exporters: [file/logs]
+  telemetry:
+    logs:
+      level: warn

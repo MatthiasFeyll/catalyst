@@ -1,0 +1,44 @@
+profile: Profile
+skills: Skills
+references: References
+contact: Contact
+
+# profile
+profile_attr:
+  subtitle: I'm an inquisitive student
+  years: years old
+  germany: Germany
+  student: Student
+
+  about_me: About me
+  introduce: I'm studying computer science in the second semester. In the last seven years of experience I have focused on several topics like smart home, cyber security and software development.
+             The latter I successfully finished my apprenticeship as IT-Specialist for application development with a focus on web development.
+
+
+# skills
+skills_attr:
+  category:
+    programming: Programming
+    tools: Tools
+
+  programming:
+    web: Web
+    overall: Overall
+    environment: Environment
+
+#references
+references_attr:
+  description: Description
+  category:
+    lookup:
+      link: See the project
+      details: My own website. With a size of less than 350 kB this website is a highly performance oriented developed. If nesecessary, it's very scalable to a extensive webapp.
+    deadline_calendar:
+      link: See the project
+      details: The DeadlineCalendar is an Android app as college project. Together with four other students we developed a complete app with a wide analyse, design, implement and presentation phase within one semester.
+
+    more_coming_soon: more coming soon
+
+# contact
+contact_attr:
+  subtitle: Questions? Go ahead

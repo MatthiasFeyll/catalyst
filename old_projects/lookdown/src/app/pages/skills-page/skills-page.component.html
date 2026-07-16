@@ -1,0 +1,57 @@
+<div id="skills-page-wrapper" class="float-lg-start page-padding-top">
+  <div class="container">
+    <div class="row d-block d-lg-none">
+      <div id="skills-title-container">
+        <h1 class="mb-0 font-bold">Eight years of<br> IT experience</h1>
+        <img src="assets/icons/underline-title.svg" alt="" loading="lazy">
+      </div>
+    </div>
+
+    <div class="row mt-sm-4">
+      <div class="col-12">
+        <div class="d-none d-lg-flex flex-row justify-content-start mb-3 categories-container">
+          <div *ngFor="let skillCategory of this.skillCategories; let i = index"
+               (click)="setActiveCategoryIndex(i)"
+               [class.active]="i === this.activeCategoryIndex"
+               class="categories px-1"
+          >
+            <i [class]="skillCategory.iconClass" class="text-primary"></i>
+            <span>{{ skillCategory.name }}</span>
+          </div>
+        </div>
+
+        <div id="skill-container" class="d-flex flex-column" [@fadeAnimation]="this.getActiveSkills.length">
+          <div *ngFor="let skill of this.getActiveSkills" class="d-flex flex-row justify-content-between">
+            <p class="text-secondary flex-grow-1 py-1 py-md-2 my-auto px-1">{{ skill.name }}</p>
+            <div class="stars my-auto">
+              <i class="fas fa-star text-primary" *ngFor="let index of [].constructor(skill.numberOfStars)"></i>
+              <i class="far fa-star text-primary" *ngFor="let index of [].constructor(numberOfTotalStars - skill.numberOfStars)"></i>
+            </div>
+          </div>
+        </div>
+
+        <!-- mobile skill category navigation -->
+        <div class="d-flex d-lg-none flex-row justify-content-between mt-2 categories-container">
+          <div *ngFor="let skillCategory of this.skillCategories; let i = index"
+               (click)="setActiveCategoryIndex(i)"
+               [class.active]="i === this.activeCategoryIndex"
+               class="categories px-1"
+          >
+            <i [class]="skillCategory.iconClass" class="text-primary"></i>
+            <span>{{ skillCategory.name }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="d-none d-lg-block absolut-container">
+  <div id="desktop-image-color-container" class="d-flex flex-column justify-content-start">
+    <div class="bg-primary d-flex">
+      <h2 class="text-black my-auto">Eight years of<br>IT experience</h2>
+    </div>
+
+    <button class="btn btn-secondary p-lg-3 px-lg-4" (click)="scrollService.scrollToPage(scrollService.pageNames.REFERENCES_PAGE)">Check out my references</button>
+  </div>
+</div>

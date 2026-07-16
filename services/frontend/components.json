@@ -1,0 +1,22 @@
+{
+  "$schema": "https://ui.shadcn.com/schema.json",
+  "//": "shadcn/ui config — FRAMEWORK-OWNED REFERENCE (ADR-0010). Records the in-repo conventions (style, CSS-variable tokens, the @/ aliases) so primitives under src/components/ui/ are consistent. NOTE (ADR-0009): primitives are VENDORED as frozen, in-repo files here rather than pulled via `npx shadcn add` — for reproducibility (the component source is committed, not re-fetched at build time). The network-egress boundary was retired (ADR-0024), so the CLI would now run, but manual vendoring is kept deliberately. To add a primitive the foundation copies its source in-repo (this file documents the target conventions).",
+  "style": "new-york",
+  "rsc": false,
+  "tsx": true,
+  "tailwind": {
+    "config": "tailwind.config.ts",
+    "css": "src/index.css",
+    "baseColor": "slate",
+    "cssVariables": true,
+    "prefix": ""
+  },
+  "aliases": {
+    "components": "@/components",
+    "utils": "@/lib/utils",
+    "ui": "@/components/ui",
+    "lib": "@/lib",
+    "hooks": "@/hooks"
+  },
+  "iconLibrary": "lucide"
+}

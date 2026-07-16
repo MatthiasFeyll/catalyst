@@ -1,0 +1,86 @@
+@import "/src/styles/colors";
+@import "/src/styles/list";
+
+.page-padding-top {
+  padding-top: 8vh !important;
+}
+
+.indicators {
+  width: 17px;
+  height: 17px;
+  border-radius: 10px;
+
+  border: solid 3px map_get($theme-colors, "secondary");
+
+  &.active {
+    background-color: map_get($theme-colors, "primary");
+  }
+}
+
+.reference {
+  display: none;
+
+  &.active {
+    display: block;
+  }
+}
+
+.front-view-content {
+  button {
+    width: 100%;
+  }
+}
+
+.reference-details {
+  background-color: map_get($theme-colors, "dark");
+  overflow: hidden;
+}
+
+.technology {
+  align-items: center;
+
+  > img {
+    height: 3em;
+  }
+
+  > p {
+    font-size: 1.25em;
+    padding-left: 0.7em;
+  }
+}
+
+$line-height-description: 1.4em;
+
+.description {
+  font-size: 0.95em;
+  text-align: justify;
+
+  max-height: ($line-height-description * 5);
+}
+
+.details-technologies {
+  opacity: 1;
+  transition: opacity ease-in-out 250ms 550ms;
+
+  &.collapsed {
+    transition: opacity ease-out 200ms;
+    opacity: 0;
+  }
+}
+
+.split-btn {
+  align-items: center;
+  background-color: map_get($theme-colors, "secondary");
+  border-radius: 5px;
+}
+
+.background-ref-details {
+  height: 60vh;
+}
+
+body {
+  #{'background-color'}: map_get($theme-colors, "dark");
+}
+
+@import "./scss/reference-page.desktop";
+@import "./scss/reference-page.mobile";

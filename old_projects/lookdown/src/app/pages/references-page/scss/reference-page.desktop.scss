@@ -1,0 +1,129 @@
+@import "/src/styles/colors";
+@import '~bootstrap/scss/_functions';
+@import '~bootstrap/scss/_variables';
+@import '~bootstrap/scss/mixins/_breakpoints';
+
+@media (min-width: map-get($grid-breakpoints, lg)) {
+  .reference-title-container {
+    background-color: map-get($theme-colors, "primary");
+
+    height: fit-content;
+
+    h2 {
+      width: 100%;
+      text-align: center;
+      color: black;
+      font-size: 3.5em;
+    }
+
+    p {
+      width: fit-content;
+      margin: auto 0 auto 10%;
+      font-size: 5em;
+      line-height: 0.8em;
+    }
+  }
+
+  .container {
+    max-width: 100vw;
+  }
+
+  .front-view-content {
+    margin-top: 10vh;
+
+    height: 50vh;
+  }
+
+  .reference-image-container {
+    height: 100%;
+    text-align: center;
+
+    .reference-image {
+      max-height: 100%;
+      max-width: 100%;
+    }
+  }
+
+  .front-view {
+    button {
+      padding: 0.5em 5em;
+
+      position: absolute;
+      bottom: 1em;
+    }
+  }
+
+  li {
+    font-size: 1.7em;
+  }
+
+  .arrow-container {
+    width: fit-content;
+    margin: auto;
+
+    i {
+      font-size: 4em;
+      margin: auto 0;
+      height: fit-content;
+    }
+  }
+
+  .indicators {
+    width: 22px;
+    height: 22px;
+  }
+
+  // details view
+  .reference {
+    width: 200vw;
+    position: relative;
+    overflow: hidden;
+
+    article {
+      width: 100vw;
+    }
+
+    transition: right ease-out 400ms, height 1ms 400ms;
+    right: 0;
+
+    &.open {
+      transition: right ease-out 400ms, height 1ms;
+      right: 100%;
+    }
+  }
+
+  .details-view-content-container {
+    width: 93%;
+    min-height: 35vh;
+    margin: 0 auto;
+
+    & > div:first-child {
+      padding-left: 6em;
+    }
+  }
+
+  .description {
+    text-align: justify;
+    font-size: 1.2em;
+  }
+
+  .technology {
+    p {
+      font-size: 1.5em;
+    }
+  }
+
+  .details-technologies + button {
+    width: 40%;
+  }
+
+  .reference-detail-image-container {
+    max-height: 100%;
+    text-align: center;
+
+    img {
+      max-height: 100%;
+      max-width: 100%;
+    }
+  }
+}

@@ -1,0 +1,38 @@
+html * {
+  font-family: 'Open Sans', sans-serif;
+}
+
+.text-small {
+  font-size: 0.6em !important;
+}
+
+.title {
+  font-weight: 200;
+
+  .is-5 {
+    font-weight: bold !important;
+  }
+}
+
+.subtitle {
+  font-size: 2em;
+}
+
+@media (max-width: 350px) {
+  .title.is-2-mobile {
+    font-size: 1.7rem !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .title.is-2-mobile {
+    font-size: 1.8rem !important;
+    font-weight: 400;
+  }
+}
+
+@media (min-width: 768px) {
+  .title.is-1-desktop {
+    font-size: 3rem !important;
+  }
+}

@@ -1,0 +1,81 @@
+{% extends 'base.html.twig' %}
+
+
+{% block body %}
+    <section class="hero is-fullheight has-bg-img">
+        <!-- Hero head: will stick at the top -->
+        <div class="hero-head">
+            <div id="navbar-background" class="is-hidden"></div>
+            <nav class="navbar has-background-white is-fixed-top">
+                <div class="container">
+                    <div class="navbar-brand">
+                        <span class="navbar-burger burger" data-target="navbarMenuHeroA">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                      </span>
+                    </div>
+                    <div id="navbarMenuHeroA" class="navbar-menu">
+                        <div class="navbar-end">
+                            <a href="#profile" class="navbar-item has-text-black" rel="nofollow">
+                                {% trans from "home" %}profile{% endtrans %}
+                            </a>
+                            <a href="#skills" class="navbar-item has-text-black" rel="nofollow">
+                                {% trans from "home" %}skills{% endtrans %}
+                            </a>
+                            <a href="#references" class="navbar-item has-text-black" rel="nofollow">
+                                {% trans from "home" %}references{% endtrans %}
+                            </a>
+                            <a href="#contact" class="navbar-item has-text-black" rel="nofollow">
+                                {% trans from "home" %}contact{% endtrans %}
+                            </a>
+                            {% if app.request.locale == 'de' %}
+                                <a class="navbar-item" href="{{ path('changeLocale', {'_locale': 'en', 'route': app.request.attributes.get('_route') }) }}" rel="nofollow">
+                                    <img alt="Flag of the United Kingdom" src="{{ asset('images/uk_flag.png') }}">
+                                </a>
+                            {% else %}
+                                <a class="navbar-item" href="{{ path('changeLocale', {'_locale': 'de', 'route': app.request.attributes.get('_route') }) }}" rel="nofollow">
+                                    <img alt="Flag of Germany" src="{{ asset('images/de_flag.png') }}">
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </nav>
+        </div>
+
+        <div class="hero-body">
+            <div class="container has-text-centered">
+                <h1 id="headerTitle" class="title is-1-desktop is-bold is-2-mobile">
+                    Matthias Feyll
+                </h1>
+                <hr id="headerLine" class="has-background-primary">
+                <a href="#profile">
+                    <div id="callToAction" class="button is-primary is-radiusless has-text-centered">
+                        <span>Feel free to <strong style="font-size: 1.1em; font-weight: bolder">lookup</strong></span>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+    </section>
+
+    {% include 'pages/home/partitials/profile.html.twig' %}
+        <img class="image is-hidden-mobile" src="{{ asset('images/profile_banner.jpg') }}" alt="Image of Matthias Feyll. Background mount of Ijen">
+    {% include 'pages/home/partitials/skills/skills.html.twig' %}
+    {% include 'pages/home/partitials/references.html.twig' %}
+    {% include 'pages/home/partitials/contact.html.twig' %}
+
+
+{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    {{ encore_entry_link_tags('home_index') }}
+{% endblock %}
+
+
+{% block javascripts %}
+    {{ parent() }}
+    {{ encore_entry_script_tags('home_index') }}
+{% endblock %}

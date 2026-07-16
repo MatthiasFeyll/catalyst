@@ -1,0 +1,23 @@
+<app-navbar></app-navbar>
+
+<div id="app" class="m-0">
+  <div [id]="pages[pageNames.LANDING_PAGE].id" class="page">
+    <app-landing-page></app-landing-page>
+  </div>
+
+  <div [id]="pages[pageNames.ABOUT_ME_PAGE].id" class="page bg-dark">
+    <app-about-me-page></app-about-me-page>
+  </div>
+
+  <div [id]="pages[pageNames.SKILLS_PAGE].id" class="page">
+    <app-skills-page></app-skills-page>
+  </div>
+
+  <div [id]="pages[pageNames.REFERENCES_PAGE].id" class="page">
+    <app-references-page></app-references-page>
+  </div>
+
+  <div [id]="pages[pageNames.CONTACT_PAGE].id" class="page">
+    <app-contact-page></app-contact-page>
+  </div>
+</div>

@@ -1,0 +1,79 @@
+# Per-feature FRONTEND GATE harness (ADR-0017) — the in-loop render smoke.
+#
+# ADR-0014 pulled all rendered/browser verification off the per-feature path; the
+# a real-run retro showed that let render crashes (white screens) and TS
+# type-drift escape to milestone-end. ADR-0017 adds two CHEAP, GENERIC, in-loop
+# frontend gates for any feature touching services/frontend/** (ADR-0022):
+#
+#   1) `tsc --noEmit` — runs in the ALREADY-RUNNING dev `frontend` service, NO
+#      service here (workdir /app):
+#        docker compose -f infra/docker-compose.dev.yml exec -T frontend npx tsc --noEmit
+#      (the frontend dev server already has node_modules + the source bind-mounted,
+#       so the type-contract check needs no new image and no install).
+#
+#   2) the generic render smoke — this `smoke` service, run against the FRONTEND
+#      origin (the Vite dev server, http://frontend:5173, ADR-0022). One headless
+#      page-load per route the feature introduces (derived from
+#      src/features/<feature>/route.tsx `path`, ADR-0015) plus `/`, asserting: HTTP
+#      < 400, #root mounted (no white screen), zero console/page errors. NO selectors,
+#      NO AC assertions — it cannot
+#      drift or be gamed; it is a loop-level BUILD-HEALTH GATE, not a firewalled AC
+#      test. The rendered-quality + a11y slice is verified at the milestone-end
+#      verification phase as deterministic business-e2e journeys (ADR-0018 retired
+#      the interactive `uiux-mcp` gate).
+#
+# USAGE (bring the dev stack up first — bash infra/bootstrap.sh):
+#   # smoke the routes a feature introduces (plus `/`):
+#   SMOKE_PATHS="/projects /projects/gallery" \
+#     docker compose --project-directory infra -f infra/docker-compose.frontend-check.yml run --rm smoke
+#   # smoke just the boot route (default):
+#   docker compose --project-directory infra -f infra/docker-compose.frontend-check.yml run --rm smoke
+#
+# WHO RUNS IT (project ADR-0004): `implementation` self-verify (after tier-1 vitest +
+# `tsc --noEmit` are green) and the per-feature `reviewer` re-run it; a failure is a
+# `fix-before-merge` `implementation`-origin finding → bounded auto-heal.
+#
+# This REUSES the standing e2e Playwright image (Dockerfile.e2e) — no new pinned
+# image to maintain. It joins the running dev network and loads the SPA from the Vite
+# dev server at http://frontend:5173 (NEVER a host-side server, NEVER localhost). It
+# is a one-shot `run --rm`, NEVER a long-running service and NEVER an ephemeral stack.
+
+# Container-log cap (see infra/adlc/docker-compose.adlc.yml).
+x-logging: &default-logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
+
+services:
+  smoke:
+    # Reuse the e2e image (Playwright + browsers baked, ADR-0009/0012). If it is not
+    # built yet: docker compose -f infra/docker-compose.e2e.yml build e2e
+    build:
+      context: .
+      dockerfile: Dockerfile.e2e
+    image: ${COMPOSE_PROJECT_NAME:-infra}-e2e:local
+    logging: *default-logging
+    working_dir: /smoke
+    environment:
+      # The Vite dev server serves the SPA here over the compose network (ADR-0022).
+      SMOKE_BASE_URL: http://frontend:5173
+      # The orchestrator passes the feature's routes (+ `/`); defaults to the boot route.
+      SMOKE_PATHS: ${SMOKE_PATHS:-/}
+      SMOKE_ARTIFACT_DIR: /smoke/test-artifacts
+    volumes:
+      # The smoke script is framework-owned — mounted read-only; artefacts (the
+      # machine-readable result JSON + failure screenshots) go to the writable mount.
+      - ./frontend-smoke.py:/smoke/frontend-smoke.py:ro
+      - ../services/frontend/e2e/test-artifacts:/smoke/test-artifacts
+    command: ["python", "frontend-smoke.py"]
+    networks:
+      - backend
+
+networks:
+  # Join the network the dev stack already created (same resolution as the e2e
+  # harness): <COMPOSE_PROJECT_NAME>_backend from infra/.env, falling back to
+  # infra_backend for a legacy project. `--project-directory infra` loads infra/.env.
+  backend:
+    external: true
+    name: ${COMPOSE_PROJECT_NAME:-infra}_backend

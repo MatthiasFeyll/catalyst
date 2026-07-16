@@ -1,0 +1,44 @@
+/***********************************************
+ *                 Hero
+ **********************************************/
+.hero-body {
+  margin-bottom: 150px;
+}
+
+.navbar {
+  border-bottom: 1px solid $primary;
+}
+
+.hero.has-bg-img {
+  background: -webkit-image-set( url('../header_banner.webp') 1x, url('../header_banner.jpg') 1x ) fixed no-repeat;
+}
+
+@media (max-width: 769px) {
+  .hero.has-bg-img {
+    background-position: center;
+    background-attachment: scroll;
+  }
+}
+
+/***********************************************
+ *             Hero components
+ **********************************************/
+#headerLine {
+  width: 75%;
+  margin-left: auto;
+  margin-right: auto;
+  opacity: 0.6;
+}
+
+#headerTitle {
+  text-transform: uppercase;
+  letter-spacing: 0.5em;
+}
+
+#callToAction {
+  width: 150px;
+  margin-top: 30px;
+  display: table-cell;
+
+  border: 1px solid $grey-dark;
+}

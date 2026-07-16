@@ -1,0 +1,22 @@
+@import "/src/styles/colors";
+@import "/src/styles/list";
+
+$image-color-width: 10vw;
+$image-color-height: 7vw;
+#desktop-image-color-container {
+  width: $image-color-width;
+  height: $image-color-height;
+
+  position: absolute;
+  bottom: -90vh;
+}
+
+img {
+  position: absolute;
+  right: 0;
+  opacity: 0.35;
+  z-index: -1;
+}
+
+@import "scss/landing-page.mobile";
+@import "scss/landing-page.desktop";

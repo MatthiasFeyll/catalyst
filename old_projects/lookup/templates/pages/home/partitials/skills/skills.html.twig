@@ -1,0 +1,41 @@
+<div id="skills" class="part tab-js">
+    <div class="columns">
+        <div class="column is-three-fifths is-offset-one-fifth">
+            <h2 class="title is-1 has-text-centered has-text-primary">{% trans from "home" %}skills{% endtrans %}</h2>
+            <p class="title is-5 has-text-grey has-text-centered">
+                "Today is the tomorrow you worried about yesterday"<br>
+                - Dale Carnegie
+            </p>
+            <hr class="has-background-grey-light">
+        </div>
+    </div>
+
+
+    <nav class="tabs is-centered is-medium">
+        <div class="container">
+            <ul>
+                <li class="tab tab-header is-active" data-target="programming">
+                    <a>
+                        <span class="icon is-small is-skill-hidden-mobile"><i class="icon-code" aria-hidden="true"></i></span>
+                        <span>{% trans from "home" %}skills_attr.category.programming{% endtrans %}</span>
+                    </a>
+                </li>
+                <li class="tab tab-header" data-target="tools">
+                    <a>
+                        <span class="icon is-small is-skill-hidden-mobile"><i class="icon-toolbox"></i></span>
+                        <span>{% trans from "home" %}skills_attr.category.tools{% endtrans %}</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="m-t-5">
+        <div id="programming" class="content-tab is-active">
+            {% include 'pages/home/partitials/skills/partitials/programming.html.twig' %}
+        </div>
+        <div id="tools" class="content-tab">
+            {% include 'pages/home/partitials/skills/partitials/tools.html.twig' %}
+        </div>
+    </div>
+</div>

@@ -1,0 +1,23 @@
+@import '~bootstrap/scss/_functions';
+@import '~bootstrap/scss/_variables';
+
+$small-mobiles-breakpoint: 340px;
+
+
+// scss-docs-start grid-breakpoints
+$grid-breakpoints: (
+  xs: 0,
+  sm: 576px,
+  md: 768px,
+  lg: 992px,
+  xl: 1200px,
+  xxl: 1400px
+) !default;
+
+
+
+@media (max-width: map-get($grid-breakpoints, "sm")) {
+  .container {
+    padding: 0 3em !important;
+  }
+}

@@ -1,0 +1,28 @@
+@import "/src/styles/colors";
+
+#about-me-text {
+  text-align: justify;
+}
+
+#about-me-container {
+  background-color: map_get($theme-colors, "dark");
+}
+
+.absolut-container {
+  #desktop-image-color-container {
+    width: 10vw;
+    height: 7vw;
+    left: 55vw;
+
+    position: absolute;
+  }
+}
+
+@import "scss/about-me-page.mobile";
+@import "scss/about-me-page.desktop";
+
+img {
+  position: absolute;
+  width: $image-width;
+  opacity: 0.35;
+}

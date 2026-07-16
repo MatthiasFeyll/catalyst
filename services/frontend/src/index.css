@@ -1,0 +1,24 @@
+/*
+  Design tokens — FRAMEWORK-OWNED REFERENCE (ADR-0010, ADR-0029). The token VALUES
+  live in DTCG `tokens.json` (+ `tokens.dark.json`) — the single source of truth —
+  and Style Dictionary GENERATES `src/styles/tokens.generated.css` (the :root/.dark
+  CSS-variable layer, HSL channels) from them via `npm run tokens:build`. The import
+  must precede the `@tailwind` directives (CSS `@import` ordering). The foundation
+  milestone sets the /design palette in tokens.json and regenerates — never edits the
+  generated file, and never re-adds a hand-authored token block here. The Tailwind
+  theme binds to these vars via hsl(var(--token)) (tailwind.config.ts, unchanged).
+*/
+@import "./styles/tokens.generated.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}

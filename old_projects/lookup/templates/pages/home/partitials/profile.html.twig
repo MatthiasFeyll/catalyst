@@ -1,0 +1,49 @@
+<div id="profile" class="part has-background-white">
+    <div class="columns">
+        <div class="column is-three-fifths is-offset-one-fifth">
+            <h2 class="title is-1 has-text-centered has-text-primary">{% trans from "home" %}profile{% endtrans %}</h2>
+            <p class="title is-5 has-text-grey has-text-centered">- {% trans from "home" %}profile_attr.subtitle{% endtrans %} -</p>
+            <hr class="has-background-grey-light">
+        </div>
+    </div>
+
+    <div class="columns">
+        <div class="column is-offset-one-fifth is-three-fifths">
+            <div id="profile-tags" class="tags are-medium">
+                <span class="tag profile-tag">
+                    Matthias Feyll
+                </span>
+
+                <span class="tag">
+                    {% set age = calculate_birthday() %}
+                    {% if age >= 0 %}
+                        {{ age }} {% trans from "home" %}profile_attr.years{% endtrans %}
+                    {% else %}
+                        {# debugging information #}
+                        <p style="color: red;">[ Please add a birth date in .env.local ]</p>
+                    {% endif %}
+                </span>
+
+                <span class="tag">
+                    <i class="icon-graduation-cap has-text-primary"></i>&nbsp;{% trans from "home" %}profile_attr.student{% endtrans %}
+                </span>
+
+                <span class="tag">
+                    <i class="icon-map-marker has-text-primary"></i>&nbsp;{% trans from "home" %}profile_attr.germany{% endtrans %}
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <div id="profile-introduce" class="columns is-center">
+        <div class="column is-offset-3-fullhd is-2-fullhd is-offset-one-fifth-mobile is-offset-one-fifth-tablet is-one-fifth-tablet is-three-fifths-mobile">
+            <figure class="image mx-auto">
+                <img class="is-rounded" src="{{ asset('images/profile_picture.jpg') }}" alt="Profile image of Matthias Feyll. Background mount Bromo">
+            </figure>
+        </div>
+        <div class="column is-4-fullhd is-two-fifths-tablet text-justify">
+            <h4 class="title is-4 has-text-primary">{% trans from "home" %}profile_attr.about_me{% endtrans %}</h4>
+            {% trans from "home" %}profile_attr.introduce{% endtrans %}
+        </div>
+    </div>
+</div>

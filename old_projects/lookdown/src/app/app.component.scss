@@ -1,0 +1,50 @@
+@import "/src/styles/colors";
+@import '~bootstrap/scss/_functions';
+@import '~bootstrap/scss/_variables';
+@import '~bootstrap/scss/mixins/_breakpoints';
+
+
+@supports (scroll-snap-type: y mandatory) {
+  #app {
+    height: 100vh;
+    overflow-y: scroll;
+    scroll-snap-type: y mandatory;
+    scroll-behavior: smooth;
+
+    scroll-snap-align: start;
+    scroll-padding-bottom: 10vh;
+
+    margin-top: -1vh;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+
+  .page {
+    scroll-snap-stop: always;
+    scroll-snap-align: start;
+  }
+}
+
+@media (max-width: map-get($grid-breakpoints, lg)) {
+  #about-me {
+    background-image: linear-gradient(
+        rgba(map_get($theme-colors, 'dark') ,0.8),
+        rgba(map_get($theme-colors, 'dark'), 0.8)
+    ), url("/assets/images/aboutMe_background.jpeg");
+
+    background-size: cover;
+    background-position: center;
+  }
+
+  #contact {
+    background-image: linear-gradient(
+        rgba(map_get($theme-colors, 'dark') ,0.8),
+        rgba(map_get($theme-colors, 'dark'), 0.8)
+    ), url("/assets/images/contact_background.png");
+
+    background-size: cover;
+    background-position: center;
+  }
+}

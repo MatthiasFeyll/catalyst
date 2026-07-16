@@ -1,0 +1,43 @@
+profile: Profil
+skills: Fähigkeiten
+references: Referenzen
+contact: Kontakt
+
+# profile
+profile_attr:
+  subtitle: Ich bin ein wissbegieriger Student
+  years: Jahre alt
+  germany: Deutschland
+  student: Student
+
+  about_me: Über mich
+  introduce: Ich studiere im zweiten Semester Informatik. In den sieben Jahren Erfahrung habe ich meinen Fokus auf die Themen Smart Home,
+             IT-Sicherheit und Softwareentwicklung gelegt. Letzteres habe ich in meiner Ausbildung zum Fachinformatiker Anwendungsentwicklung in der Webentwicklung intensiviert.
+
+# skills
+skills_attr:
+  category:
+    programming: Programmierung
+    tools: Tools
+
+  programming:
+    web: Web
+    overall: Allgemein
+    environment: Environment
+
+#references
+references_attr:
+  description: Beschreibung
+  category:
+    lookup:
+      link: Zum Projekt
+      details: Meine eigene Webseite. Mit einer Größe von weniger als 350 KB ist diese sehr performance-orientiert gebaut. Bei Bedarf kann sie schnell auf eine umfangreiche Webapp skaliert werden.
+    deadline_calendar:
+      link: Zum Projekt
+      details: Der DeadlineCalendar ist eine Android-App als Projekt der Hochschule. Zusammen mit vier weiteren Studierenden haben wir innerhalb von einem Semester eine komplette App mit umfangreicher Analyse, Design, Implementierung und Präsentationsphase.
+
+    more_coming_soon: Weitere folgen
+
+# contact
+contact_attr:
+  subtitle: Questions? Go ahead

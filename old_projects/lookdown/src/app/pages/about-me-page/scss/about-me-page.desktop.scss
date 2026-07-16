@@ -1,0 +1,31 @@
+@import '~bootstrap/scss/_functions';
+@import '~bootstrap/scss/_variables';
+@import '~bootstrap/scss/mixins/_breakpoints';
+
+$image-width: 46vw;
+
+@media (min-width: map-get($grid-breakpoints, lg)) {
+  #about-me-text {
+    padding-top: 18vh !important;
+  }
+
+  #about-me-text {
+    font-size: 1.3em;
+  }
+
+  #about-me-text > div {
+    max-height: 500px;
+  }
+
+  .container {
+    padding-top: 10vh;
+
+    width: 100vw - $image-width;
+    margin: 0 0 0 $image-width;
+
+    & > div {
+      margin: 0 auto;
+      width: 68%;
+    }
+  }
+}

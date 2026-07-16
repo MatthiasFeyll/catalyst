@@ -1,0 +1,75 @@
+<div id="references" class="part has-background-white">
+    <div class="columns">
+        <div class="column is-three-fifths is-offset-one-fifth">
+            <h2 class="title is-1 has-text-centered has-text-primary">{% trans from "home" %}references{% endtrans %}</h2>
+            <p class="title is-5 has-text-grey has-text-centered">
+                A picture says more than a thousand words - or a reference
+            </p>
+            <hr class="has-background-grey-light">
+        </div>
+    </div>
+
+    {# lookup #}
+    <div class="columns is-multiline">
+        <div class="column is-offset-one-fifth is-three-fifths-tablet is-4-fullhd">
+            <img class="image" alt="Landing page of this lookup page" src="{{ asset('images/references/lookup_landingpage.jpg') }}">
+        </div>
+
+        <div class="column is-offset-one-fifth-tablet is-offset-0-fullhd is-three-fifths-tablet is-3-fullhd">
+            <h3 class="title is-5 has-text-primary">Matthias Feyll - Lookup</h3>
+
+            <p><b>{% trans from "home" %}references_attr.description{% endtrans %}:</b></p>
+            <p class="text-justify">{% trans from "home" %}references_attr.category.lookup.details{% endtrans %}</p>
+
+            <p class="pt-3-desktop"><b>Tags:</b></p>
+            <p class="dev-tags">Typescript, Bulma, Twig, Docker</p>
+
+
+            <a href="https://gitlab.com/M-Felly/feyll_lookup" target="_blank">
+                <button class="button is-primary m-t-5">
+                    <span>{% trans from "home" %}references_attr.category.lookup.link{% endtrans %}</span>
+                    &nbsp;
+                    <span class="icon">
+                        <i class="icon-gitlab" style="font-size: 1.5rem"></i>
+                    </span>
+                </button>
+            </a>
+        </div>
+    </div>
+
+    {# deadline_calendar #}
+    <div class="columns is-multiline mt-2">
+        <div class="column is-offset-one-fifth is-three-fifths-tablet is-4-fullhd">
+            <img class="image" alt="Landing page of this lookup page" src="{{ asset('images/references/deadline_calendar.jpg') }}">
+        </div>
+
+        <div class="column is-offset-one-fifth-tablet is-offset-0-fullhd is-three-fifths-tablet is-3-fullhd">
+            <h3 class="title is-5 has-text-primary">DeadlineCalendar</h3>
+
+            <p><b>{% trans from "home" %}references_attr.description{% endtrans %}:</b></p>
+            <p class="text-justify">{% trans from "home" %}references_attr.category.deadline_calendar.details{% endtrans %}</p>
+
+            <p class="pt-3-desktop"><b>Tags:</b></p>
+            <p class="dev-tags">Java, Room, Volley</p>
+
+
+            <a href="https://gitlab.com/M-Felly/deadlinecalendar/-/tree/master/src" target="_blank">
+                <button class="button is-primary m-t-5">
+                    <span>{% trans from "home" %}references_attr.category.lookup.link{% endtrans %}</span>
+                    &nbsp;
+                    <span class="icon">
+                        <i class="icon-gitlab" style="font-size: 1.5rem"></i>
+                    </span>
+                </button>
+            </a>
+        </div>
+    </div>
+
+
+
+    <div class="columns">
+        <div class="column has-text-centered">
+            <span class="has-text-grey">- {% trans from "home" %}references_attr.category.more_coming_soon{% endtrans %} -</span>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,20 @@
+# Pinned dependencies for the standing E2E harness (infra/docker-compose.e2e.yml, ADR-0009).
+#
+# These are installed INSIDE the runner container, not on the host. Pin them to
+# match the Playwright image tag in docker-compose.e2e.yml: `playwright` here MUST
+# equal the image's Playwright version (e.g. image v1.60.0-noble ⇒ playwright==1.60.0)
+# so the image's bundled browsers match the pip package and no `playwright install`
+# step is needed. Bump the image tag and this pin together.
+#
+# pytest is pinned >=9.0.3 to fix CVE-2025-71176 (insecure /tmp/pytest-of-{user}
+# tmpdir handling; "pytest through 9.0.2"). pytest-playwright>=0.7.2 is required
+# for pytest 9 support — 0.8.0 declares pytest <10,>=6.2.4.
+#
+# pytest-xdist enables the harness's `-n auto` parallel execution (it declares
+# pytest>=6.2.0, so it is compatible with the pin above). E2E specs must use
+# isolated data to be parallel-safe (see docker-compose.e2e.yml § PARALLEL).
+pytest==9.0.3
+pytest-playwright==0.8.0
+playwright==1.60.0
+axe-playwright-python==0.1.7
+pytest-xdist==3.6.1

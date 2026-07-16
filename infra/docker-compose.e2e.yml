@@ -1,0 +1,83 @@
+# Standing Playwright E2E harness — FRONTEND-ONLY / HERMETIC (project ADR-0004).
+#
+# catalyst is a purely static, public SPA (no Django API, no auth, no IdP). This
+# harness runs the deterministic business-e2e suite (services/frontend/e2e/) ONCE, at
+# the MILESTONE-END verification phase — never on the per-feature path (that is tier-1
+# vitest + `tsc --noEmit` + the render smoke, ADR-0004). It is fully OFFLINE/HERMETIC:
+# the SPA is the statically built, shipped `nginx:alpine` image; there is no backend to
+# reach and no IdP. Journeys that depend on a Vercel serverless function MOCK the
+# endpoint in-test (Playwright `page.route(...)` / MSW) — never a live function.
+#
+# Two self-contained services on a PRIVATE, isolated network, so the gate drivers can
+# `docker compose -p <isolated> down -v` safely (no dev stack to clobber):
+#   frontend — the shipped SPA image (services/frontend/Dockerfile: node build → nginx).
+#   e2e      — the Playwright runner (Dockerfile.e2e), driving the browser at http://frontend/.
+#
+# Driven by infra/run-e2e-gate.sh (and infra/prod-parity.sh). Direct use:
+#   docker compose -p catalyst-e2e -f infra/docker-compose.e2e.yml up -d --build --wait frontend
+#   docker compose -p catalyst-e2e -f infra/docker-compose.e2e.yml run --rm e2e
+#   docker compose -p catalyst-e2e -f infra/docker-compose.e2e.yml down -v
+#
+# PINNING: the Dockerfile.e2e FROM tag and the `playwright` pin in e2e-requirements.txt
+# MUST match (same Playwright version) so the image's bundled browsers match the pip
+# package. Bump both together. Deps enter only via the pinned requirements inside the
+# image build (the sanctioned supply-chain ingress, ADR-0009) — never on the host.
+x-logging: &default-logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
+
+services:
+  frontend:
+    # The SHIPPED artifact: the exact prod nginx image serving the built `dist/`. No
+    # VITE_API_URL is baked (function calls are mocked in-test), so the build needs no
+    # external origin and the running container makes no outbound calls — hermetic.
+    build:
+      context: ../services/frontend
+      dockerfile: Dockerfile
+    image: ${COMPOSE_PROJECT_NAME:-catalyst}-spa:e2e
+    logging: *default-logging
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO /dev/null http://127.0.0.1/ || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 5s
+    networks:
+      - app
+
+  e2e:
+    # Deps pre-baked into the image (Dockerfile.e2e) — no per-run pip install (ADR-0012).
+    build:
+      context: .
+      dockerfile: Dockerfile.e2e
+    image: ${COMPOSE_PROJECT_NAME:-catalyst}-e2e:local
+    logging: *default-logging
+    working_dir: /e2e
+    environment:
+      # Playwright base origin = the built SPA served by the nginx `frontend` service
+      # (port 80 on the private network). A `run -e` flag overrides it.
+      E2E_FRONTEND_URL: ${E2E_FRONTEND_URL:-http://frontend}
+    # `$${E2E_TARGET:-.}` / `$${E2E_WORKERS:-4}` are `$$`-escaped so the CONTAINER shell
+    # expands them at runtime from `docker compose run -e …`, not compose at parse time.
+    # Default: the whole suite (`.`, includes _skeleton/). `--dist loadgroup` honors any
+    # xdist_group("db-serial") markers a journey sets. axe (axe-playwright-python) is
+    # baked in for the rendered/a11y journeys.
+    command: >
+      sh -c "python -m pytest $${E2E_TARGET:-.} -q -n $${E2E_WORKERS:-4} --dist loadgroup -o cache_dir=/tmp/pytest_cache"
+    volumes:
+      # Suite mounted READ-ONLY (test-integrity firewall); artifacts to a writable mount.
+      - ../services/frontend/e2e:/e2e:ro
+      - ../services/frontend/e2e/test-artifacts:/e2e/test-artifacts
+    depends_on:
+      frontend:
+        condition: service_healthy
+    networks:
+      - app
+
+networks:
+  # Private, isolated network — created and torn down with this compose project. Not
+  # external: the gate is self-contained (no dev stack, no shared state).
+  app:
+    driver: bridge

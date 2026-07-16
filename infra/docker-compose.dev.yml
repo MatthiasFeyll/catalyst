@@ -1,0 +1,68 @@
+# Container-log cap (see infra/adlc/docker-compose.adlc.yml). Docker's default
+# json-file driver is unbounded; cap at 3 × 10 MB = 30 MB per container.
+x-logging: &default-logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
+
+# DEV STACK — FRONTEND-ONLY (project ADR-0001). catalyst is a purely static Vite SPA;
+# there is no Django API and no database, so the dev stack is just the Vite dev server.
+# The only server-side surface (Vercel serverless functions, ADR-0001) is run separately
+# with `vercel dev` when needed and proxied via VITE_DEV_PROXY_TARGET (vite.config.ts).
+services:
+  frontend:
+    # FRONTEND DEV SERVER (ADR-0022 dev fast-path). Runs the Vite dev server with HMR —
+    # an edit is reflected in the browser instantly and a stale/blanked bundle is
+    # STRUCTURALLY IMPOSSIBLE (there is no build output to go stale). It is reached at
+    # http://localhost:5173 (host) and http://frontend:5173 (compose network). Node is
+    # dev/build-time only (ADR-0022) — prod is the nginx image (services/frontend/Dockerfile).
+    #
+    # `npm ci` (the sanctioned lockfile install, ADR-0009) runs once onto the
+    # node_modules volume; it is skipped on restart when the volume is already populated,
+    # so restarts are fast. Crash-loops harmlessly until services/frontend/ exists (early
+    # phases). The node_modules volume is layered AFTER the source bind mount so the
+    # container's installed deps are not shadowed by the (gitignored, host-empty) source dir.
+    image: node:22-alpine
+    restart: unless-stopped
+    logging: *default-logging
+    working_dir: /app
+    command: >
+      sh -c "if [ ! -d node_modules/vite ]; then npm ci; fi &&
+             npm run dev -- --host 0.0.0.0 --port 5173"
+    environment:
+      # The api client uses "/api"; the SPA is static so there is no backend to proxy to
+      # by default. Set VITE_DEV_PROXY_TARGET (e.g. a local `vercel dev` at
+      # http://host.docker.internal:3000) to exercise serverless functions in dev.
+      VITE_API_URL: /api
+    volumes:
+      - ../services/frontend:/app
+      - frontend_node_modules:/app/node_modules
+    ports:
+      # Host side is per-project (ADR-0035) — the browser origin becomes
+      # http://localhost:<ADLC_FRONTEND_HOST_PORT>; http://frontend:5173 on the
+      # compose network stays canonical (Playwright MCP, render smoke).
+      - "${ADLC_FRONTEND_HOST_PORT:-5173}:5173"
+    healthcheck:
+      # Socket-connect so the check passes as soon as the dev server is listening.
+      test:
+        [
+          "CMD-SHELL",
+          'node -e "require(''net'').createConnection(5173,''127.0.0.1'').on(''connect'',()=>process.exit(0)).on(''error'',()=>process.exit(1))"',
+        ]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    networks:
+      - backend
+
+volumes:
+  frontend_node_modules:
+
+networks:
+  # Named `backend` for continuity with the adlc MCP stack + the render-smoke harness,
+  # which join this network to reach the dev `frontend` service. It carries only the
+  # frontend now (no Django backend / db exist in this project).
+  backend:
+    driver: bridge

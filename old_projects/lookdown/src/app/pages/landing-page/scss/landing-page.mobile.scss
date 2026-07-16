@@ -1,0 +1,70 @@
+@import '~bootstrap/scss/_functions';
+@import '~bootstrap/scss/_variables';
+@import '~bootstrap/scss/mixins/_breakpoints';
+@import '/src/styles/breakpoints';
+
+@media (max-width: 404px) {
+  h1 {
+    font-size: 2.3em;
+  }
+}
+
+@media (max-width: 377px) {
+  h1 {
+    font-size: 1.9em;
+  }
+}
+
+@media (min-width: map-get($grid-breakpoints, md)) {
+  .row {
+    padding-left: 2rem;
+  }
+
+  .display-2 {
+    font-size: calc(1.525rem + 2vw);
+  }
+
+  #cta-button {
+    width: auto;
+  }
+
+  #desktop-title-container {
+    width: 50vw;
+
+    div:first-child {
+      background-color: map_get($theme-colors, "primary");
+      padding-top: 1.5rem;
+      padding-bottom: 1.5rem;
+    }
+
+    h1, p {
+      color: map_get($theme-colors, "dark") !important;
+    }
+  }
+
+  $image-width: 40vw;
+  #desktop-image-color-container {
+    right: $image-width - ($image-color-width / 2);
+  }
+
+  img {
+    width: $image-width;
+  }
+}
+
+@media (max-width: $small-mobiles-breakpoint) {
+  li {
+    margin: 1em 0;
+  }
+  ul {
+    margin: 0;
+  }
+
+  // title and subtitle text
+  h1 {
+    font-size: 1.6em;
+  }
+  p, li {
+    font-size: 0.9em;
+  }
+}

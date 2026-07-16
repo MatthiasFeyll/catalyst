@@ -1,0 +1,42 @@
+{
+  "//": "FRAMEWORK-OWNED REFERENCE, adapted for catalyst (project ADR-0001/0002/0004; deviates from fw-ADR-0022/0025). The prescribed React + Vite + TS + Tailwind + shadcn/ui stack ships here so the foundation milestone ADOPTS and EXTENDS it instead of authoring the shell file-by-file. catalyst is a purely static, PUBLIC, auth-less SPA — there is NO Azure Entra / MSAL (removed per ADR-0002; the SPA mints and validates no tokens). `style-dictionary` (devDep, ADR-0029) GENERATES the CSS-variable token layer (src/styles/tokens.generated.css) from the DTCG tokens.json — `tokens:build` runs it, and `predev`/`prebuild` run it automatically so the theme can never drift from the tokens. Deps are EXACT-pinned (no ^ ranges) and acquired ONLY via the committed package-lock.json + `npm ci` inside the container build / dev service. The foundation adds feature-specific deps by pinning them here and re-running `npm install` to update the lockfile, then commits both. `dev` runs the Vite dev server (HMR); `build` emits dist/ for the nginx prod image; `typecheck` is the per-feature `tsc --noEmit` gate and `test` the per-feature `vitest` tier (project ADR-0004).",
+  "name": "frontend",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "tokens:build": "node style-dictionary.config.mjs",
+    "predev": "npm run tokens:build",
+    "dev": "vite",
+    "prebuild": "npm run tokens:build",
+    "build": "vite build",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --passWithNoTests"
+  },
+  "dependencies": {
+    "@radix-ui/react-label": "2.1.1",
+    "@radix-ui/react-slot": "1.1.1",
+    "@tanstack/react-query": "5.62.7",
+    "class-variance-authority": "0.7.1",
+    "clsx": "2.1.1",
+    "lucide-react": "0.468.0",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "react-router-dom": "6.30.4",
+    "tailwind-merge": "2.5.5",
+    "tailwindcss-animate": "1.0.7"
+  },
+  "devDependencies": {
+    "@types/node": "22.10.2",
+    "@types/react": "18.3.17",
+    "@types/react-dom": "18.3.5",
+    "@vitejs/plugin-react": "4.3.4",
+    "autoprefixer": "10.4.20",
+    "postcss": "8.5.15",
+    "style-dictionary": "4.3.0",
+    "tailwindcss": "3.4.17",
+    "typescript": "5.7.2",
+    "vite": "6.4.3",
+    "vitest": "3.2.4"
+  }
+}

@@ -1,0 +1,120 @@
+@import "../../color";
+@import "icons/icons.scss";
+
+html {
+  scroll-behavior: smooth;
+}
+
+.part {
+  padding: 5rem 0 4rem 0;
+}
+
+/***********************************************
+ *                 Header
+ **********************************************/
+@import "partitals/hero";
+
+#navbar-background {
+  min-width: 100%;
+  min-height: 100%;
+  position: fixed;
+
+  z-index: 1;
+}
+
+
+/***********************************************
+ *                  Profile
+ **********************************************/
+#profile-introduce {
+  div:last-child {
+    h4 {
+      padding-bottom: 10px;
+    }
+  }
+}
+
+#profile-tags {
+  padding: 0 0 1.5rem 0;
+  margin-top: 0;
+
+  span {
+    border: solid 1px $grey-light;
+    border-radius: 0 !important;
+    margin: 0 auto 0 auto;
+  }
+}
+
+
+/***********************************************
+ *                   Skills
+ **********************************************/
+@import "partitals/skills";
+
+
+/***********************************************
+ *                References
+ **********************************************/
+#references {
+  div:not(:first-child) {
+    a {
+      bottom: 15px;
+
+      &>button {
+        min-width: 100%;
+      }
+    }
+  }
+}
+
+@media (min-width: 1530px) {
+  #references {
+    div:not(:first-child) {
+      padding: 15px 0;
+
+      a {
+        bottom: 15px;
+        position: absolute;
+        width: 100%;
+      }
+
+      &>div:last-child {
+        position: relative;
+      }
+    }
+  }
+}
+
+
+/***********************************************
+ *                 Contacts
+ **********************************************/
+#contact {
+  padding-bottom: 13rem;
+
+  .list-item {
+    a {
+      line-height: 37px;
+    }
+
+    button {
+      padding: 11px;
+      margin-right: 20px;
+    }
+
+    i {
+      font-size: 1.3rem;
+    }
+  }
+
+  $hoverColor: #BBB;
+  .list-item a:hover {
+      color: $hoverColor !important;
+
+      button {
+        background-color: $hoverColor !important;
+        border-color: $hoverColor !important;
+      }
+  }
+}
+

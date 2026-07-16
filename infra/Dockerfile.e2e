@@ -1,0 +1,29 @@
+# Standing E2E harness image (ADR-0009 supply chain; ADR-0012 cost controls).
+#
+# Pre-bakes the pinned E2E test dependencies into an image layer so the harness
+# does NOT reinstall them on every `docker compose run`. The per-run
+# `pip install --no-cache-dir` was the dominant fixed cost of each inner-loop
+# checkpoint (red baseline, self-verify, every review) — observed in practice.
+# Baking them once turns N reinstalls into one cached build layer.
+#
+# This is still the sanctioned supply-chain ingress (ADR-0009): deps enter ONLY
+# through the pinned, lockfile-style `e2e-requirements.txt`, resolved INSIDE the
+# container build — never host-side, never `curl`/`wget`. Building deps into the
+# image is strictly more compliant than the old runtime install.
+#
+# The base image's bundled browsers must match the `playwright` pin in
+# e2e-requirements.txt (e.g. image v1.60.0-noble ⇒ playwright==1.60.0); bump the
+# FROM tag and that pin together (ADR-0009) so there is no pip/browser skew.
+#
+# Rebuild only when e2e-requirements.txt changes:
+#   docker compose -f infra/docker-compose.e2e.yml build e2e
+FROM mcr.microsoft.com/playwright/python:v1.60.0-noble
+
+WORKDIR /e2e
+
+# Copy only the requirements before installing so this pip layer caches
+# independently of the test sources (which are bind-mounted read-only at run
+# time, never baked in — the test-integrity firewall keeps tests out of the
+# image so they can change between runs without a rebuild).
+COPY e2e-requirements.txt /reqs/e2e-requirements.txt
+RUN pip install --no-cache-dir -r /reqs/e2e-requirements.txt

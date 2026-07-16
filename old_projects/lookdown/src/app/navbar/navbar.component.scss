@@ -1,0 +1,88 @@
+@import "/src/styles/colors";
+@import '~bootstrap/scss/_functions';
+@import '~bootstrap/scss/_variables';
+@import '~bootstrap/scss/mixins/_breakpoints';
+@import '/src/styles/breakpoints';
+
+p {
+  font-size: 1em;
+}
+
+nav {
+  padding: 1em 1.3em 0 1.3em;
+  align-items: center;
+
+  img {
+    padding: 0 5px;
+    height: 2em;
+  }
+
+  #nav-icons {
+    opacity: 0;
+    transition: opacity 150ms ease-in-out;
+
+    &.show {
+      transition: opacity 150ms 400ms ease-in-out;
+      opacity: 1;
+    }
+  }
+
+  #desktop-nav-item-container {
+    p.active {
+      border-bottom: 2px solid map_get($theme-colors, "primary");
+    }
+  }
+}
+
+footer {
+  height: 8vh;
+  margin: auto 0;
+  align-items: center;
+
+  div {
+    margin-top: 0.5em;
+  }
+
+  i {
+    font-size: 1.5em;
+  }
+
+  i, p {
+    opacity: 0.6;
+
+    transition: opacity 100ms ease-in-out;
+
+    &.active {
+      opacity: 1;
+    }
+  }
+
+  p {
+    margin: 0;
+    color: black;
+  }
+}
+
+@media (min-width: map-get($grid-breakpoints, lg)) {
+  p {
+    font-size: 1.4em;
+  }
+  nav {
+    padding: 1.5em 1.5em 0 1.5em;
+  }
+}
+
+@media (max-width: $small-mobiles-breakpoint) {
+  footer {
+    i  {
+      font-size: 1.15em !important;
+    }
+    p {
+      display: none;
+    }
+  }
+
+  #nav-icons img {
+    height: 1.5em;
+  }
+}

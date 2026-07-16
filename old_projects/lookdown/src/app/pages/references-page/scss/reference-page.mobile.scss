@@ -1,0 +1,142 @@
+@import "/src/styles/colors";
+@import '~bootstrap/scss/_functions';
+@import '~bootstrap/scss/_variables';
+@import '~bootstrap/scss/mixins/_breakpoints';
+@import '/src/styles/breakpoints';
+
+
+@media (max-width: map-get($grid-breakpoints, lg)) {
+  .reference-details {
+    // image background container
+    background-repeat: no-repeat;
+    background-size: 100vh;
+    background-position-x: center;
+
+    position: fixed;
+
+    top: 100vh;
+    transition: top ease-out 400ms, height 1ms 400ms;
+    height: 0;
+
+    &.open {
+      transition: top ease-out 400ms, height 1ms;
+      height: 73vh;
+      top: 19vh;
+    }
+  }
+
+  .split-btn {
+    > div {
+      &:nth-child(1) {
+        border-radius: 5px 0 0 5px;
+      }
+
+      &:nth-child(2) {
+        border-left: 2.5px solid map_get($theme-colors, "dark");
+        border-radius: 0 5px 5px 0;
+        background-color: map_get($theme-colors, "primary");
+        text-align: center;
+
+        img {
+          margin: 0.5em 0;
+          height: 1.5em;
+        }
+
+        div {
+          padding-left: 0.1em;
+        }
+      }
+    }
+  }
+
+  $line-height-description: 1.4em;
+
+  .description {
+    line-height: $line-height-description;
+
+    min-height: ($line-height-description * 5);
+    overflow: hidden;
+
+    transition: max-height ease-in-out 400ms;
+
+    &.collapsed {
+      transition: max-height ease-out 500ms 450ms;
+      height: 100%;
+      max-height: 45vh;
+      overflow-y: auto;
+    }
+  }
+
+  .description-container, .details-view-content-container{
+    position: relative;
+
+    bottom: 0;
+    transition: bottom 200ms 400ms ease-in-out;
+
+    &.collapsed {
+      transition: bottom 300ms 150ms ease-out;
+      bottom: 25vh;
+    }
+  }
+
+  .reference-image-container {
+    text-align: center;
+
+    .reference-image{
+      max-width: 100%;
+      max-height: 25vh;
+
+      opacity: 1;
+      transition: opacity ease-in-out 200ms;
+
+      &.collapsed {
+        transition: opacity ease-out 200ms;
+        opacity: 0;
+      }
+    }
+  }
+}
+
+@media (max-width: $small-mobiles-breakpoint) {
+  li {
+    padding: 0.3em;
+    margin: 0.4em 0;
+  }
+
+  h4 {
+    font-size: 1.2em;
+  }
+
+  p, li{
+    font-size: 0.9em;
+  }
+
+  .reference-image {
+    max-height: 20vh !important;
+  }
+
+  .technology {
+    img {
+      height: 1.5em;
+    }
+    p {
+      font-size: 1.1em;
+    }
+  }
+
+  .details-view-content-container {
+    div {
+      font-size: 0.9em;
+    }
+  }
+
+  .indicators {
+    width: 14px;
+    height: 14px;
+    border-radius: 10px;
+  }
+
+  #reference-bullet-points {
+    text-align: center;
+  }
+}

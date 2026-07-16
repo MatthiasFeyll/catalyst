@@ -1,0 +1,23 @@
+@charset "utf-8";
+
+@import "color";
+
+// import all needed bulma scss files
+@import "~bulma/sass/utilities/all";
+@import "~bulma/sass/components/tabs";
+@import "~bulma/sass/components/navbar";
+@import "~bulma/sass/base/all";
+@import "~bulma/sass/grid/all";
+@import "~bulma/sass/layout/hero";
+@import "~bulma/sass/helpers/all";
+@import "~bulma/sass/elements/all";
+
+// own components
+@import "customzie/text";
+@import "customzie/list";
+@import "customzie/button";
+@import "customzie/border";
+@import "customzie/navbar";
+@import "customzie/columns";
+@import "customzie/helper";
+@import "customzie/image";

@@ -1,0 +1,29 @@
+version: "3.7"
+
+services:
+  php:
+    build:
+      context: ..
+      dockerfile: docker/php-fpm/Dockerfile
+    container_name: lookdown_php
+    volumes:
+      - ../:/app
+    working_dir: /app
+
+  web:
+    image: nginx:latest
+    container_name: lookdown_nginx
+    ports:
+      - "8081:80"
+    volumes:
+      - ./nginx/site.conf:/etc/nginx/conf.d/default.conf
+      - ../:/app
+    depends_on:
+      - php
+
+  node:
+    image: node:latest
+    container_name: lookdown_node
+    volumes:
+      - ../:/app
+    working_dir: /app

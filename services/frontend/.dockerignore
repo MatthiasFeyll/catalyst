@@ -1,0 +1,11 @@
+# Build context = services/frontend (`docker build services/frontend`). Keep it small
+# + reproducible: deps are re-installed via `npm ci` in the Node stage and the bundle
+# is built there, so exclude installed/built artifacts and host cruft. FRAMEWORK-OWNED
+# REFERENCE (ADR-0022).
+node_modules/
+dist/
+.vite/
+*.log
+.env
+.env.*
+!.env.example

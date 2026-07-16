@@ -1,0 +1,46 @@
+@import '~bootstrap/scss/_functions';
+@import '~bootstrap/scss/_variables';
+@import '~bootstrap/scss/mixins/_breakpoints';
+
+
+@media (min-width: map-get($grid-breakpoints, lg)) {
+  .row {
+    padding-left: 7rem;
+    padding-right: 4rem;
+  }
+
+  .display-2 {
+    font-size: calc(1.525rem + 2.7vw);
+  }
+
+  #desktop-title-container {
+    width: 45vw;
+
+    div:first-child {
+      background-color: map_get($theme-colors, "primary");
+      padding-top: 2rem;
+      padding-bottom: 2rem;
+    }
+
+    h1, p {
+      color: map_get($theme-colors, "dark") !important;
+    }
+
+    p {
+      font-size: 1.3em;
+    }
+
+    li {
+      font-size: 1.4em;
+    }
+  }
+
+  $image-width: 40vw;
+  #desktop-image-color-container {
+    right: $image-width - ($image-color-width / 2);
+  }
+
+  img {
+    width: $image-width;
+  }
+}

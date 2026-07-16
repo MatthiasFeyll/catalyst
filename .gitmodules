@@ -1,0 +1,9 @@
+[submodule "old_projects/lookdown"]
+	path = old_projects/lookdown
+	url = git@private:MatthiasFeyll/lookdown.git
+[submodule "old_projects/lookup"]
+	path = old_projects/lookup
+	url = git@private:MatthiasFeyll/lookup.git
+[submodule "old_projects/median_ai"]
+	path = old_projects/median_ai
+	url = https://gitlab.com/M-Felly/median_ai

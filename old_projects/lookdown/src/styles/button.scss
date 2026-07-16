@@ -1,0 +1,30 @@
+@import "/src/styles/colors";
+@import '~bootstrap/scss/_functions';
+@import '~bootstrap/scss/_variables';
+@import '~bootstrap/scss/mixins/_breakpoints';
+@import "breakpoints";
+
+@media (max-width: map-get($grid-breakpoints, md)) {
+  button {
+    font-size: 1.1em !important;
+  }
+}
+
+@media (max-width: $small-mobiles-breakpoint) {
+  button {
+    font-size: 0.9em !important;
+    width: 80% !important;
+    margin: auto !important;
+  }
+}
+
+
+@media (min-width: map-get($grid-breakpoints, md)) {
+  button {
+    font-size: 1.3em !important;
+  }
+}
+
+
+
+

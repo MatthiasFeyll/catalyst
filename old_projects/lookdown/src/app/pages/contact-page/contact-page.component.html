@@ -1,0 +1,57 @@
+<div id="contact-page-wrapper" class="position-relative">
+  <div id="imprint-desktop" class="d-none d-lg-block bg-primary position-absolute px-5 py-3">
+    <h5 class="text-black">Imprint:</h5>
+    <p class="m-0">Matthias Feyll<br> Frankfurter Straße 2<br> 64293 Darmstadt<br> Germany<br><br>E-Mail: matthias.feyll@hotmail.com</p>
+  </div>
+
+  <div class="container">
+    <div class="page-padding-top">
+      <h2 class="text-primary font-bold d-block d-lg-none">Contact me</h2>
+    </div>
+
+    <div class="row">
+      <div class="col-12 offset-lg-4 col-lg-8">
+        <h2 class="text-primary font-bold d-none d-lg-block">Contact me</h2>
+        <form action="/php/contactFormular.php" accept-charset="UTF-8" class="needs-validation">
+          <div class="mt-1 mt-sm-2 mt-lg-0 float-lg-start">
+            <label for="input-name" class="text-white form-label">Your name:</label>
+            <input type="text" class="form-control" id="input-name" name="name" required [(ngModel)]="name" maxlength="40">
+            <div class="invalid-feedback">Please type in your name</div>
+          </div>
+
+          <div class="mt-1 mt-sm-3 float-lg-start">
+            <label for="input-email" class="text-white form-label">Your E-mail:</label>
+            <input type="email" class="form-control" id="input-email" name="email" required [(ngModel)]="email" maxlength="50">
+            <div class="invalid-feedback">Please type in your e-mail</div>
+          </div>
+
+          <div class="mt-1 mt-sm-3">
+            <label for="input-message" class="text-white form-label">Your message:</label>
+            <textarea class="form-control" id="input-message" name="message" required [(ngModel)]="message" maxlength="500"></textarea>
+            <div class="invalid-feedback">Please type a message</div>
+          </div>
+
+          <div class="mt-2 mt-sm-3 mt-lg-5">
+            <button class="btn btn-primary float-end p-lg-3 px-lg-4" [disabled]="submitButtonDisabled">
+              <ng-container *ngIf="!submitButtonDisabled; else messageSubmitted">Submit message</ng-container>
+              <ng-template #messageSubmitted>Message received</ng-template>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div id="social-media-icon-container" class="row d-none d-lg-flex">
+      <div class="offset-10 col-2">
+        <a href="https://xing.com/profile/Matthias_Feyll"><img src="/assets/icons/xing-icon.png" alt="xing-icon"></a>
+        <a href="https://de-de.facebook.com/matthias.feyll"><img src="/assets/icons/facebook-icon.png" alt="facebook-icon"></a>
+        <a href="https://twitter.com/MatthiasF_15"><img src="/assets/icons/twitter-icon.png" alt="twitter-icon"></a>
+      </div>
+    </div>
+
+    <div id="mobile-imprint" *ngIf="formValid" class="d-flex d-lg-none row mt-2 mt-sm-3">
+      <h6 class="text-primary">Imprint</h6>
+      <p>Matthias Feyll, Frankfurter Straße 2, 64293 Darmstadt, Germany<br>E-Mail: matthias.feyll@hotmail.com</p>
+    </div>
+  </div>
+</div>

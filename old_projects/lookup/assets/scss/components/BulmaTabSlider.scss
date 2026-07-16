@@ -1,0 +1,8 @@
+.content-tab {
+  display: none;
+  min-height: 350px;
+
+  &.is-active {
+    display: block;
+  }
+}

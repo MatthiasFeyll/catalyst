@@ -1,0 +1,75 @@
+{# tools #}
+<div class="columns tab-content fade">
+    <div class="column is-three-fifths is-offset-one-fifth">
+        <h5 class="title is-5 has-text-primary">{% trans from "home" %}skills_attr.programming.environment{% endtrans %}</h5>
+        {# other #}
+        <div class="list">
+            <a class="list-item">
+                <span class="skill">
+                    Docker
+                </span>
+                <span class="score">
+                    {% apply spaceless %}
+                        {% for i in 0..2 %}<i class="icon-star-full"></i>{% endfor %}
+                        {% for i in 0..1 %}<i class="icon-star-empty"></i>{% endfor %}
+                    {% endapply %}
+                </span>
+            </a>
+            <a class="list-item">
+                <span class="skill">
+                    JetBrains products
+                </span>
+                <span class="score">
+                    {% apply spaceless %}
+                        {% for i in 0..2 %}<i class="icon-star-full"></i>{% endfor %}
+                        {% for i in 0..1 %}<i class="icon-star-empty"></i>{% endfor %}
+                    {% endapply %}
+                 </span>
+            </a>
+            <a class="list-item">
+                <span class="skill">
+                    Git
+                </span>
+                <span class="score">
+                    {% apply spaceless %}
+                        {% for i in 0..2 %}<i class="icon-star-full"></i>{% endfor %}
+                        {% for i in 0..1 %}<i class="icon-star-empty"></i>{% endfor %}
+                    {% endapply %}
+                </span>
+            </a>
+            <a class="list-item">
+                <span class="skill">
+                    Visual Studio Code
+                </span>
+                <span class="score">
+                    {% apply spaceless %}
+                        {% for i in 0..1 %}<i class="icon-star-full"></i>{% endfor %}
+                        {% for i in 0..2 %}<i class="icon-star-empty"></i>{% endfor %}
+                    {% endapply %}
+                 </span>
+            </a>
+            <a class="list-item">
+                <span class="skill">
+                    GitLab CI/CD
+                </span>
+                <span class="score">
+                    {% apply spaceless %}
+                        {% for i in 0..1 %}<i class="icon-star-full"></i>{% endfor %}
+                        {% for i in 0..2 %}<i class="icon-star-empty"></i>{% endfor %}
+                    {% endapply %}
+                </span>
+            </a>
+            <a class="list-item">
+                <span class="skill">
+                    GitLab Runner
+                </span>
+                <span class="score">
+                    {% apply spaceless %}
+                        {% for i in 0..1 %}<i class="icon-star-full"></i>{% endfor %}
+                        {% for i in 0..2 %}<i class="icon-star-empty"></i>{% endfor %}
+                    {% endapply %}
+                </span>
+            </a>
+        </div>
+    </div>
+</div>

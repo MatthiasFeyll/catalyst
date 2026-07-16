@@ -1,0 +1,35 @@
+# Container-log cap (see infra/adlc/docker-compose.adlc.yml). Docker's default
+# json-file driver is unbounded; cap at 3 × 10 MB = 30 MB per container.
+x-logging: &default-logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
+
+# TIER-1 SIGNAL — FRONTEND-ONLY (project ADR-0004). catalyst is a purely static
+# Vite SPA (no Django API, no DB, no auth), so the per-feature tier-1 gate is a
+# frontend one: `tsc --noEmit` (type-drift) + `vitest` (unit / serverless-function
+# handler tests, mocked). There is no pytest, no backend, no database here. The
+# rendered/a11y slice stays at milestone-end (Playwright + axe, docker-compose.e2e.yml);
+# the in-loop render smoke is docker-compose.frontend-check.yml.
+services:
+  test:
+    # No Dockerfile: run the pinned toolchain straight from the official node image
+    # against the bind-mounted source (like the dev frontend service). `npm ci` runs
+    # once onto the node_modules volume and is skipped when already populated.
+    image: node:22-alpine
+    logging: *default-logging
+    working_dir: /app
+    command: >
+      sh -c "if [ ! -d node_modules/vite ]; then npm ci; fi &&
+             npm run typecheck &&
+             npm run test"
+    volumes:
+      # Source mounted read-only — tests change between runs but the harness never
+      # bakes them (test-integrity firewall). node_modules is a named volume layered
+      # over the (host-empty) source dir so installed deps are not shadowed.
+      - ../services/frontend:/app:ro
+      - frontend_test_node_modules:/app/node_modules
+
+volumes:
+  frontend_test_node_modules:

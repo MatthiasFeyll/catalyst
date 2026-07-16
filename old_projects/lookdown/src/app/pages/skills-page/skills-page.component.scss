@@ -1,0 +1,62 @@
+@import "/src/styles/colors";
+@import '~bootstrap/scss/_functions';
+@import '~bootstrap/scss/_variables';
+@import '~bootstrap/scss/mixins/_breakpoints';
+
+#skills-title-container {
+  width: fit-content;
+}
+
+h1 {
+  width: fit-content;
+}
+
+img {
+  width: 100%;
+}
+
+.stars > i {
+  font-size: 1.2em;
+  margin-left: 0.15em;
+  transition: margin-left 150ms ease-in-out;
+
+  &.far {
+    color: darken(map_get($theme-colors, "primary"), 20) !important;
+  }
+}
+
+#skill-container {
+  min-height: 54vh;
+  max-height: 54vh;
+}
+
+.categories-container {
+  height: fit-content;
+}
+
+.categories {
+  i {
+    margin-right: 0.2em;
+  }
+
+  @media (max-width: 363px) {
+    i {
+      display: none;
+    }
+  }
+}
+
+.categories.active {
+  border-bottom: solid 3px map_get($theme-colors, "secondary");
+}
+
+p {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  flex-basis: 30vw;
+}
+
+
+@import "./scss/skills-page.desktop";
+@import "./scss/skills-page.mobile";

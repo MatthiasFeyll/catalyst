@@ -1,0 +1,39 @@
+<nav class="fixed-top d-flex justify-content-between">
+  <p class="text-white m-0 clickable" (click)="scrollService.scrollToPage(scrollService.pageNames.LANDING_PAGE)">Matthias Feyll</p>
+  <div id="nav-icons" [class.show]="(scrollService.scrollEventEmitter | async) === pages[scrollService.pageNames.CONTACT_PAGE]" class="d-md-none">
+    <a href="https://xing.com/profile/Matthias_Feyll"><img src="/assets/icons/xing-icon.png" alt="xing-icon"></a>
+    <a href="https://de-de.facebook.com/matthias.feyll"><img src="/assets/icons/facebook-icon.png" alt="facebook-icon"></a>
+    <a href="https://twitter.com/MatthiasF_15"><img src="/assets/icons/twitter-icon.png" alt="twitter-icon"></a>
+  </div>
+
+  <div id="desktop-nav-item-container" class="text-white d-none d-md-flex">
+    <p class="mx-4 my-0 clickable" [class.active]="(scrollService.scrollEventEmitter | async) === pages[scrollService.pageNames.ABOUT_ME_PAGE]" (click)="this.scrollService.scrollToPage(scrollService.pageNames.ABOUT_ME_PAGE)">About me</p>
+    <p class="mx-4 my-0 clickable" [class.active]="(scrollService.scrollEventEmitter | async) === pages[scrollService.pageNames.SKILLS_PAGE]" (click)="this.scrollService.scrollToPage(scrollService.pageNames.SKILLS_PAGE)">Skills</p>
+    <p class="mx-4 my-0 clickable" [class.active]="(scrollService.scrollEventEmitter | async) === pages[scrollService.pageNames.REFERENCES_PAGE]" (click)="this.scrollService.scrollToPage(scrollService.pageNames.REFERENCES_PAGE)">References</p>
+    <p class="mx-4 my-0 clickable" [class.active]="(scrollService.scrollEventEmitter | async) === pages[scrollService.pageNames.CONTACT_PAGE]" (click)="this.scrollService.scrollToPage(scrollService.pageNames.CONTACT_PAGE)">Contact</p>
+  </div>
+</nav>
+
+
+<footer class="fixed-bottom bg-primary d-flex flex-row justify-content-evenly d-md-none" [class.d-none]="this.keyboardInputService.keyboardInputEmitter | async">
+  <div class="text-center" (click)="this.scrollService.scrollToPage(scrollService.pageNames.ABOUT_ME_PAGE)">
+    <i [class]="(scrollService.scrollEventEmitter | async) === pages[scrollService.pageNames.ABOUT_ME_PAGE] ? 'fas active' : 'far'" class="fa-user"></i>
+    <p [class]="(scrollService.scrollEventEmitter | async) === pages[scrollService.pageNames.ABOUT_ME_PAGE] ? 'active' : ''">About me</p>
+  </div>
+
+  <div class="text-center" (click)="this.scrollService.scrollToPage(scrollService.pageNames.SKILLS_PAGE)">
+    <i [class]="(scrollService.scrollEventEmitter | async) === pages[scrollService.pageNames.SKILLS_PAGE] ? 'fas active' : 'far'" class="fa-star"></i>
+    <p [class]="(scrollService.scrollEventEmitter | async) === pages[scrollService.pageNames.SKILLS_PAGE] ? 'active' : ''">Skills</p>
+  </div>
+
+  <div class="text-center" (click)="this.scrollService.scrollToPage(scrollService.pageNames.REFERENCES_PAGE)">
+    <i [class]="(scrollService.scrollEventEmitter | async) === pages[scrollService.pageNames.REFERENCES_PAGE] ? 'fas active' : 'far'" class="fa-bookmark"></i>
+    <p [class]="(scrollService.scrollEventEmitter | async) === pages[scrollService.pageNames.REFERENCES_PAGE] ? 'active' : ''">References</p>
+  </div>
+
+  <div class="text-center" (click)="this.scrollService.scrollToPage(scrollService.pageNames.CONTACT_PAGE)">
+    <i [class]="(scrollService.scrollEventEmitter | async) === pages[scrollService.pageNames.CONTACT_PAGE] ? 'fas active' : 'far'" class="fa-envelope"></i>
+    <p [class]="(scrollService.scrollEventEmitter | async) === pages[scrollService.pageNames.CONTACT_PAGE] ? 'active' : ''">Contact</p>
+  </div>
+</footer>
+

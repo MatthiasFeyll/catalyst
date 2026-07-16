@@ -1,0 +1,7 @@
+{
+  "mcpServers": {
+    "structurizr": { "type": "http", "url": "http://localhost:20203/mcp" },
+    "postgres":    { "type": "sse",  "url": "http://localhost:20205/sse" },
+    "playwright":  { "type": "http", "url": "http://localhost:20206/mcp" }
+  }
+}

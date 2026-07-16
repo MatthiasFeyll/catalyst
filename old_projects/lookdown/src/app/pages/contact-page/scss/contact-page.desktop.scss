@@ -1,0 +1,76 @@
+@import "/src/styles/colors";
+@import '~bootstrap/scss/_functions';
+@import '~bootstrap/scss/_variables';
+@import '~bootstrap/scss/mixins/_breakpoints';
+
+@media (min-width: map-get($grid-breakpoints, lg)) {
+  form > div {
+    &:first-child, &:nth-child(2) {
+      width: 50%;
+    }
+
+    &:first-child {
+      padding-right: 4em;
+    }
+
+    &:nth-child(2) {
+      padding-left: 4em;
+      margin-top: 0 !important;
+    }
+
+    &:nth-child(3) {
+      padding-top: 7.5em;
+    }
+  }
+
+  .container {
+    position: relative;
+    left: 5vw;
+  }
+
+  h2 {
+    font-size: 2.5em;
+  }
+
+  label {
+    font-size: 1.2em;
+  }
+
+  textarea {
+    height: 25vh;
+  }
+
+  #contact-page-wrapper {
+    background-image: linear-gradient(
+        rgba(map_get($theme-colors, 'dark'), 0.8),
+        rgba(map_get($theme-colors, 'dark'), 0.8)
+    ), url("/assets/images/contact_background.png");
+
+    background-position: left;
+    background-size: 30%;
+    background-repeat: no-repeat;
+  }
+}
+
+
+#imprint-desktop {
+  bottom: 0;
+  left: 22vw;
+  padding: 1em;
+
+  p {
+    color: lighten(map-get($theme-colors, "dark"), 15%);
+  }
+
+  h5 {
+    margin-bottom: 1.15em !important;
+  }
+}
+
+#social-media-icon-container {
+  margin-top: 6em;
+
+  a {
+    margin-left: 1em;
+  }
+}

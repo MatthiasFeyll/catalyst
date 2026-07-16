@@ -1,0 +1,136 @@
+# OpenTelemetry collector — CENTRAL EGRESS overlay (opt-in, profile: central).
+#
+# This is the on-disk base config PLUS one scrubbed egress channel to an
+# external OTLP/HTTP endpoint (consumer out of framework scope; ADR-0004). It still writes everything to disk
+# locally; it additionally forwards a MINIMISED dataset to the central
+# endpoint. It is loaded only by the `otel-collector-central` service under
+# the `central` compose profile, and only does anything when
+# AGENTIC_CENTRAL_OTLP_ENDPOINT is set. The base otel-collector-config.yaml
+# is unchanged; a project that never opts in never loads this file.
+#
+# What leaves the machine (and nothing else):
+#   - OTEL numeric metrics (cost / token / counts)
+#   - behavioural trace events with args_summary + path-bearing meta DROPPED
+#   - project_snapshot events (size + architecture complexity + counts)
+# Identity stamped on egress: agentic.project/org (clear-text real names),
+# agentic.developer (pseudonymous salted hash), agentic.framework_version.
+
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+      http:
+        endpoint: 0.0.0.0:4318
+
+  # Tail the behavioural trace JSONL so its events ride the SAME egress channel.
+  # start_at: end => only events created after central is enabled are shipped.
+  filelog/trace:
+    include: [/logs/agent-trace.jsonl]
+    start_at: end
+    storage: file_storage/trace_offset
+    operators:
+      - type: json_parser
+        parse_from: body
+
+extensions:
+  # Persists filelog read offsets + the exporter sending queue across restarts.
+  # Lives under /logs (== .claude/logs), which is already gitignored.
+  file_storage/trace_offset:
+    directory: /logs/.otel-filelog
+    create_directory: true
+
+processors:
+  batch:
+    timeout: 5s
+    send_batch_size: 256
+
+  # Existing local-identifier scrub (unchanged from the base config).
+  attributes/scrub:
+    actions:
+      - key: user.email
+        action: delete
+      - key: user.account_uuid
+        action: delete
+      - key: organization.id
+        action: delete
+
+  # Stamp pseudonymous fleet identity on everything that egresses.
+  # project/org are clear-text real names; developer is a salted hash.
+  resource/central:
+    attributes:
+      - key: agentic.project
+        value: ${env:AGENTIC_PROJECT_SLUG}
+        action: upsert
+      - key: agentic.org
+        value: ${env:AGENTIC_ORG_SLUG}
+        action: upsert
+      - key: agentic.developer
+        value: ${env:AGENTIC_DEVELOPER_HASH}
+        action: upsert
+      - key: agentic.framework_version
+        value: ${env:AGENTIC_FRAMEWORK_VERSION}
+        action: upsert
+
+  # Drop path-/content-bearing fields from trace log records BEFORE egress.
+  # Keep the tool NAME and all structured analytic meta; drop the summary.
+  transform/trace_scrub:
+    error_mode: ignore
+    log_statements:
+      - context: log
+        statements:
+          - delete_key(attributes, "args_summary")
+          - delete_key(attributes, "blocked_path_or_command")
+
+exporters:
+  # Local sinks (unchanged) — central egress is ADDITIVE, not a replacement.
+  file/metrics:
+    path: /logs/otel-metrics.jsonl
+    rotation:
+      max_megabytes: 20
+      max_days: 7
+      max_backups: 3
+  file/logs:
+    path: /logs/otel-logs.jsonl
+    rotation:
+      max_megabytes: 20
+      max_days: 7
+      max_backups: 3
+
+  # The single scrubbed egress channel. TLS is terminated by the cloud ingress
+  # in front of the external consumer (out of scope) — endpoint must be https.
+  otlphttp/central:
+    endpoint: ${env:AGENTIC_CENTRAL_OTLP_ENDPOINT}
+    encoding: proto
+    compression: gzip
+    headers:
+      Authorization: Bearer ${env:AGENTIC_CENTRAL_API_KEY}
+    retry_on_failure:
+      enabled: true
+      max_elapsed_time: 300s
+    sending_queue:
+      enabled: true
+      storage: file_storage/trace_offset
+
+service:
+  extensions: [file_storage/trace_offset]
+  pipelines:
+    # Metrics: keep local file + add egress.
+    metrics/central:
+      receivers: [otlp]
+      processors: [attributes/scrub, resource/central, batch]
+      exporters: [file/metrics, otlphttp/central]
+    # Claude Code native OTEL logs: keep local file + add egress.
+    logs/central:
+      receivers: [otlp]
+      processors: [attributes/scrub, resource/central, batch]
+      exporters: [file/logs, otlphttp/central]
+    # Behavioural trace events: scrubbed, egress-only (the local OTEL-logs
+    # file is for native OTEL logs; trace JSONL already lives on disk).
+    logs/trace_central:
+      receivers: [filelog/trace]
+      processors: [transform/trace_scrub, resource/central, batch]
+      exporters: [otlphttp/central]
+  telemetry:
+    logs:
+      level: warn

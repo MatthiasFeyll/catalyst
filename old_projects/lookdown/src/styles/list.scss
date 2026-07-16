@@ -1,0 +1,20 @@
+@import "colors";
+
+ul {
+  list-style: none;
+}
+
+li {
+  padding: 10px;
+  margin: 25px 0;
+  font-size: 1.2em;
+
+  text-decoration: none;
+  border-left: solid 5px map_get($theme-colors, "primary");
+}
+
+@media (max-width: 404px) {
+  li {
+    font-size: 1em;
+  }
+}

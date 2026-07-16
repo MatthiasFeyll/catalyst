@@ -1,0 +1,30 @@
+@import "/src/styles/colors";
+
+input, textarea {
+  background-color: rgba(map_get($theme-colors, "dark"), 0.8) !important;
+  color: white !important;
+
+  &:focus {
+    border-color: map_get($theme-colors, "primary");
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset, 0 0 8px rgba(map_get($theme-colors, "primary"), 0.6);
+  }
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 30px map_get($theme-colors, "dark") inset !important;
+  -webkit-text-fill-color: white !important;
+}
+
+textarea {
+  height: 15vh;
+}
+
+#contact-page-wrapper {
+  height: 100vh;
+}
+
+@import "scss/contact-page.mobile";
+@import "scss/contact-page.desktop";

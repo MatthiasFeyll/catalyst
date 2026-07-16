@@ -1,0 +1,93 @@
+# Python (the e2e Playwright runner is Python, inside its container)
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Frontend build output + deps (ADR-0022). The SPA is a SEPARATE service now
+# (services/frontend/): `dist/` is the built bundle (produced in the nginx prod image,
+# never committed), `node_modules/` is installed via `npm ci` in the container build /
+# the dev Vite service (never committed; it lives on the frontend_node_modules volume
+# in dev).
+services/frontend/dist/
+services/frontend/node_modules/
+
+# Tests — milestone-end e2e artifacts (failure screenshots/traces); keep the dir.
+services/frontend/e2e/test-artifacts/*
+!services/frontend/e2e/test-artifacts/.gitkeep
+.coverage
+htmlcov/
+# Milestone prod-parity gate verdict (infra/prod-parity.sh writes it; callers read
+# it — ADR-0012). Regenerated each run; never committed.
+infra/.prod-parity-result.json
+# Per-feature mutation-challenge verdict (infra/mutation-challenge.sh writes it;
+# the orchestrator reads it — ADR-0027). Regenerated each run; never committed.
+infra/.mutation-result.json
+# Dev-backed business-e2e gate verdict (infra/run-e2e-gate.sh writes it). Regenerated
+# each run; never committed. (Sibling of the prod-parity verdict above.)
+infra/.e2e-gate-result.json
+# Business-e2e grounding-lint verdict (infra/lint-e2e-grounding.py writes it; the
+# orchestrator + milestone-end reviewer read it — ADR-0032). Regenerated each run; never committed.
+infra/.e2e-grounding-result.json
+# Integration-heartbeat verdicts (ADR-0033): the walking-skeleton smoke
+# (run-e2e-gate.sh with E2E_RESULT_FILE) + the schema-contract drift check
+# (infra/schema-drift.sh). Regenerated each integration; never committed.
+# NOTE: services/backend/schema.snapshot.yaml (the drift BASELINE) is the exact
+# opposite — it IS committed (project-owned, regenerated on an additive change).
+infra/.e2e-skeleton-result.json
+infra/.schema-drift-result.json
+# Gate-driver suite logs (siblings of the result files above; the drivers keep the
+# last run's full pytest output for debugging — nothing streams to stdout, since a
+# non-draining caller would deadlock the suite through a full pipe buffer).
+# Overwritten each run; never committed.
+infra/.e2e-*-result.log
+infra/.prod-parity-result.log
+# Unattended milestone-runner logs (the adlc-driver / run-milestones.sh shim,
+# ADR-0036). Transient; never committed.
+.adlc/run-milestones.*.log
+# Driver supervisor-event mirror (JSON-lines twin of the stdout event stream,
+# ADR-0036), archived halt markers (never silently deleted), and the WP2 triage
+# result handshake (ADR-0037). Local run telemetry; never committed.
+.adlc/driver-events.jsonl
+.adlc/halts/
+.adlc/triage-result.json
+# The orchestrator's turn journal (WI-6, ADR-0031) and the retired claude-turn.py
+# verdict file (pre-0.47.0 driver; kept ignored for the transition window).
+.adlc/turn.json
+.adlc/.turn-verdict.json
+
+# Env / secrets
+.env
+.env.*
+!.env.example
+# infra/.env holds ONLY non-secret dev config — COMPOSE_PROJECT_NAME (the
+# container-name prefix) + DEV_WRITE_TOKEN (the dev/E2E write-token sentinel).
+# Commit it so both stay stable + /update-project-reconcilable.
+# (infra/adlc/.env — the central-egress secret — stays ignored, below.)
+!infra/.env
+
+# Claude Code (local-only). The bare `.claude/logs/` is root-anchored (the
+# mid-string slash anchors it), so a subagent running a hook with a NESTED cwd
+# (e.g. inside a worktree) can create a stray `<dir>/.claude/logs/` that the
+# root rule misses and `phase_commit.py`'s `git add -A` then sweeps into the
+# commit (an observed stray-trace-dir defect). `**/.claude/logs/`
+# ignores it at ANY depth.
+.claude/logs/
+**/.claude/logs/
+.claude/settings.local.json
+
+# Editor / OS
+.DS_Store
+.idea/
+.vscode/
+*.swp
+
+# AgentOps central egress (opt-in): endpoint/key live here, never committed
+infra/adlc/.env
+.otel-filelog/
+
+# Structurizr generated render/layout (workspace.dsl is the ground truth)
+architecture/workspace.json
+architecture/.structurizr/

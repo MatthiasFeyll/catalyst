@@ -1,0 +1,73 @@
+#skills {
+  background: -webkit-image-set( url('../header_banner.webp') 1x, url('../header_banner.jpg') 1x );
+  overflow-x: hidden;
+
+  .list-item {
+    border: 0 !important;
+    padding: 0.3em 0 0.3em 0;
+    background-color: inherit !important;
+    display: block;
+
+    &:hover {
+      cursor: inherit;
+      background-color: rgba(204,204,204, .4) !important;
+
+      // lighten starshover
+      i.icon-star-full{
+        color: lighten($primary, 10%) !important;
+      }
+
+      // move stars to the left
+      .score i{
+        margin: 0 1px 0 1px !important;
+
+        &:last-child{
+          margin-right: 0 !important;
+        }
+      }
+    }
+
+    &>.skill {
+      color: $grey-dark;
+    }
+
+    &>.score {
+      color: $primary;
+      float: right;
+
+      // set star ease transition for hovering
+      i {
+        font-size: 1.2em;
+
+        transition: margin ease-in-out 0.2s, color ease-in-out .2s;
+      }
+    }
+  }
+}
+
+@media (min-width: 769px) {
+  #skills {
+    .tabs {
+      width: 60%;
+      margin: auto;
+    }
+  }
+}
+
+@media (max-width: 769px) {
+  #skills {
+    background-position-x: -800px;
+  }
+}
+
+@media (max-width: 1023px) and (min-width: 769px) {
+  #programming_other {
+    margin-right: 16.6666667%;
+  }
+}
+
+@media (max-width: 308px) {
+  .is-skill-hidden-mobile {
+    display: none;
+  }
+}

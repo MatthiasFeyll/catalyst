@@ -1,0 +1,16 @@
+@import "../color";
+
+a.navbar-item {
+  &.is-active {
+    color: $primary !important;
+    background-color: lighten($grey-light, 20%) !important;
+
+    &:hover {
+      color: darken($primary, 20%) !important;
+    }
+  }
+
+  &:hover {
+    color: lighten($black, 20%) !important;
+  }
+}

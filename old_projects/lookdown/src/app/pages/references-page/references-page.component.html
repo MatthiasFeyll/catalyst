@@ -1,0 +1,136 @@
+<div class="page-padding-top" style="overflow-x: hidden">
+
+  <div class="d-flex d-lg-none justify-content-center mt-2">
+    <div class="indicators mx-1"
+         *ngFor="let _ of [].constructor(references.length); let i = index"
+         [class.active]="i === visibleReferenceIndex"
+         (click)="changeVisibleReferenceAbsolut(i)"
+    ></div>
+  </div>
+
+  <section class="reference mt-1 mt-sm-4"
+           [class.active]="i === visibleReferenceIndex"
+           [class.open]="detailsOpen"
+           *ngFor="let reference of references; let i = index"
+  >
+    <article class="front-view container float-lg-start">
+      <div class="row">
+        <div class="reference-title-container py-lg-5">
+          <h2 class="mx-lg-auto" [@fadeAnimation]="visibleReferenceIndex">{{ reference.title }}</h2>
+        </div>
+      </div>
+
+      <div class="front-view-content row">
+        <div class="arrow-container d-none d-lg-block col-lg-2">
+          <i (click)="changeVisibleReferenceRelative(-1)" class="fas fa-chevron-right text-primary clickable" style="transform: rotate(180deg)"></i>
+        </div>
+
+        <div class="col-12 col-lg-5 reference-image-container" [@fadeAnimation]="visibleReferenceIndex">
+          <img class="reference-image mt-1 details-technologies" [class.collapsed]="detailsOpen" [src]="'/assets/images/' + reference.frontView.image.name" [alt]="reference.frontView.image.alt">
+        </div>
+
+        <div id="reference-bullet-points" class="mt-2 mt-sm-0 col-12 col-lg-3 position-relative">
+          <ul class="mt-1 p-0 text-start" [@fadeAnimation]="visibleReferenceIndex">
+            <li *ngFor="let bulletPoint of reference.frontView.bulletPoints">
+              {{ bulletPoint }}
+            </li>
+          </ul>
+
+          <button class="btn btn-secondary mt-2" (click)="detailsOpen = true">Details</button>
+        </div>
+
+        <div class="arrow-container d-none d-lg-block col-lg-2">
+          <i (click)="changeVisibleReferenceRelative(1)" class="fas fa-chevron-right text-primary clickable"></i>
+        </div>
+      </div>
+    </article>
+
+
+    <article class="reference-details container p-lg-0 float-lg-start" [class.open]="detailsOpen" [ngStyle]="{'background-image': 'linear-gradient(rgba(' + backgroundGradientColor + ' ,0.85), rgba(' + backgroundGradientColor + ', 0.85)), url(' + backgroundImageUrl + ')' }">
+        <div id="background-ref-details" class="mt-lg-1 mt-lg-0">
+          <div [@fadeAnimation]="visibleReferenceIndex">
+            <div class="row d-none d-lg-flex" style="height: 25vh">
+              <div class="col-7 reference-title-container py-5">
+                <p (click)="closeDetails()" class="float-start text-dark clickable">&#8592;</p>
+                <h2 class="mx-lg-auto">{{ reference.title }}</h2>
+              </div>
+              <div class="reference-detail-image-container offset-1 col-3">
+                <img [src]="'/assets/images/' + reference.frontView.image.name" [alt]="reference.frontView.image.alt">
+              </div>
+            </div>
+
+            <!-- desktop view -->
+            <div class="details-view-content-container row mt-4 d-none d-lg-flex">
+              <div class="col-6">
+                <div class="description-container">
+                  <h4 class="text-primary font-bold">Description</h4>
+                  <div class="text-secondary description mt-2" [innerHTML]="reference.detailsView.description"></div>
+                </div>
+              </div>
+              <div class="offset-1 col-5 d-flex flex-column justify-content-between">
+                <div class="details-technologies">
+                  <h4 class="text-primary font-bold">Technologies</h4>
+                  <div class="d-flex flex-column justify-content-start mt-2">
+                    <div class="technology d-flex flex-row py-2 mt-2" *ngFor="let technology of reference.detailsView.technologies">
+                      <img [src]="'/assets/icons/' + technology.techIconName" alt="">
+                      <p class="m-0 pl-4">{{ technology.techName }}</p>
+                    </div>
+                  </div>
+                </div>
+
+                <button class="btn btn-secondary p-lg-3 px-lg-4" (click)="redirectTo(reference.detailsView.actionButton.url)">
+                  <img [src]="'/assets/icons/' + reference.detailsView.actionButton.iconName" style="height: 1.5em" alt="">
+                  {{ reference.detailsView.actionButton.text }}
+                </button>
+              </div>
+            </div>
+            <!-- end desktop view -->
+
+            <!-- mobile view -->
+            <div class="d-block d-lg-none">
+              <div class="details-technologies row mt-2 mt-sm-4" [class.collapsed]="collapsed">
+                <h4 class="text-primary font-bold">Technologies</h4>
+                <div class="d-flex flex-column justify-content-start">
+                  <div class="technology d-flex flex-row py-2" *ngFor="let technology of reference.detailsView.technologies">
+                    <img [src]="'/assets/icons/' + technology.techIconName" alt="">
+                    <p class="m-0 pl-4">{{ technology.techName }}</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="description-container row mt-2 mt-sm-4 position-relative" [class.collapsed]="collapsed">
+                <h4 class="text-primary font-bold">Description</h4>
+                <div class="text-secondary description" (click)="collapseText()" [class.collapsed]="collapsed" [innerHTML]="reference.detailsView.description">
+                </div>
+                <div (click)="collapseText()">
+                  <p class="font-bold"><ng-container *ngIf="!collapsed; else readLess">Read more</ng-container><span>&nbsp;&#8594;</span></p>
+                  <ng-template #readLess>Read less</ng-template>
+                </div>
+              </div>
+            </div>
+            <!-- end mobile view -->
+          </div>
+
+          <div class="row details-view-content-container d-block d-lg-none" [class.collapsed]="collapsed">
+            <div>
+              <div class="split-btn d-flex flex-row">
+                <div class="px-4 mx-1" (click)="closeDetails()">Back</div>
+                <div class="flex-grow-1" (click)="redirectTo(reference.detailsView.actionButton.url)">
+                  <img [src]="'/assets/icons/' + reference.detailsView.actionButton.iconName" alt="">
+                  <div class="btn">{{ reference.detailsView.actionButton.text }}</div>
+                </div>
+              </div>
+            </div>
+        </div>
+      </div>
+    </article>
+  </section>
+
+  <div class="d-none d-lg-flex justify-content-center" [class.d-lg-none]="detailsOpen">
+    <div class="indicators mx-1 mx-lg-2 clickable"
+         *ngFor="let _ of [].constructor(references.length); let i = index"
+         [class.active]="i === visibleReferenceIndex"
+         (click)="changeVisibleReferenceAbsolut(i)"
+    ></div>
+  </div>
+</div>

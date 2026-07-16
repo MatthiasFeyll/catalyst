@@ -1,0 +1,37 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    :root {
+        --dark: 29, 34, 32;
+        --text: 237, 237, 237;
+        --primary: 206, 83, 22;
+    }
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --dark: 29, 34, 38;
+        --text: 237, 237, 237;
+        --primary: 206, 83, 22;
+    }
+}
+
+.svg-inline--fa {
+    color: rgb(var(--primary));
+}
+
+@keyframes subtle-bounce {
+    0%,
+    100% {
+        transform: translate(-50%, 0);
+    }
+    50% {
+        transform: translate(-50%, -10px);
+    }
+}
+
+.grecaptcha-badge {
+    visibility: hidden;
+}

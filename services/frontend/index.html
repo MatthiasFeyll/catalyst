@@ -1,0 +1,21 @@
+<!doctype html>
+<!--
+  Vite SPA entry — FRAMEWORK-OWNED REFERENCE (ADR-0022). `vite build` reads this as
+  the build entry and emits a hashed bundle + a rewritten index.html into `dist/`.
+  The frontend is served from the ROOT of its own origin (Vite `base` = "/"): the
+  Vite DEV SERVER in dev (HMR), an `nginx:alpine` image serving `dist/` in prod — NOT
+  Django (the backend is API-only now). Keep <div id="root"> (the render smoke,
+  ADR-0017, asserts #root mounts) and the module script entry.
+-->
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" href="/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>App</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

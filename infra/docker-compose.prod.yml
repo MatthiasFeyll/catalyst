@@ -1,0 +1,42 @@
+# Container-log cap (see infra/adlc/docker-compose.adlc.yml). Docker's default
+# json-file driver is unbounded; cap at 3 × 10 MB = 30 MB per container.
+x-logging: &default-logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
+
+# PROD STACK — FRONTEND-ONLY (project ADR-0001/0022 deviation). catalyst's single
+# terminal artefact is the static SPA served by `nginx:alpine`. There is no Django API,
+# no database, no auth. The serverless functions (ADR-0001) are deployed on Vercel, not
+# in this compose. The milestone-end prod-parity gate (infra/prod-parity.sh) builds and
+# exercises this exact image via the hermetic e2e harness.
+services:
+  frontend:
+    # nginx SPA image (ADR-0022) — the built Vite bundle served from its own origin.
+    # VITE_API_URL is a BUILD ARG (Vite inlines env at build time): the browser-visible
+    # serverless-function base the bundled JS calls. In a real deployment the functions
+    # are same-origin under `/api`, so `/api` is the default.
+    build:
+      context: ../services/frontend
+      args:
+        VITE_API_URL: ${VITE_API_URL:-/api}
+    image: ${FRONTEND_IMAGE:-catalyst-frontend:latest}
+    restart: unless-stopped
+    logging: *default-logging
+    ports:
+      # Parametric host publish so a prod run can sit beside the dev stack without a
+      # collision. Default 8080 for a standalone run.
+      - "${FRONTEND_HOST_PORT:-8080}:80"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO /dev/null http://127.0.0.1/ || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - app
+
+networks:
+  app:
+    driver: bridge

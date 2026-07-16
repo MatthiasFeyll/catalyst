@@ -1,0 +1,260 @@
+# ADLC framework infrastructure (all local) — the MCP catalogue + AgentOps
+# observability. This is *framework* infra, distinct from the project's own
+# dev/test/prod stacks at the infra/ root.
+#
+# The MCP servers (postgres, playwright) reach the dev stack's `db` and
+# `backend` services over the shared `backend` network, so this stack must be
+# **co-launched with the dev stack in a single invocation** for the networks
+# to merge:
+#
+#   docker compose --project-directory infra \
+#     -f infra/docker-compose.dev.yml -f infra/adlc/docker-compose.adlc.yml up -d
+#
+# `infra/bootstrap.sh` does exactly this (and is the idempotent resume command
+# after a machine reboot).
+#
+# IMPORTANT — relative path resolution. With multiple `-f` files, Docker
+# Compose resolves every relative host path against the *project directory*,
+# which is `infra/` here (the dev stack lives there and is the first `-f`;
+# bootstrap.sh also pins it with `--project-directory infra`). So the paths
+# below are written **relative to `infra/`**, NOT relative to this file's own
+# `infra/adlc/` directory: `../` is the project root, and this stack's own
+# asset files are referenced as `./adlc/<file>` (the leading `./` is required
+# so short-form volume entries are read as bind mounts, not named volumes).
+
+# Container-log cap (applied to every service below). Docker's default
+# json-file driver is unbounded; without this a chatty/looping container can
+# grow /var/lib/docker container logs to tens of GB. Cap at 3 × 10 MB = 30 MB
+# per container.
+x-logging: &default-logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
+
+services:
+  # --- MCP catalogue --------------------------------------------------------
+
+  structurizr-mcp:
+    # Official Structurizr MCP. Stateless HTTP transport on :3000 at /mcp.
+    # `-dsl` enables DSL validation/parse/inspect; `-mermaid`/`-plantuml` the
+    # diagram exporters. No `-server-*` flags — the architecture model is kept
+    # as on-disk DSL, not synced to a remote Structurizr cloud/server.
+    # Docs: https://docs.structurizr.com/ai/mcp
+    image: structurizr/mcp
+    init: true
+    command:
+      - "-dsl"
+      - "-mermaid"
+      - "-plantuml"
+    ports:
+      # Host side is per-project (ADR-0035; allocated into infra/.env by
+      # /init-project); the project .mcp.json points at the allocated port.
+      # Container side (PORT below) never changes.
+      - "${ADLC_STRUCTURIZR_MCP_HOST_PORT:-3000}:3000"
+    environment:
+      PORT: "3000"
+    volumes:
+      - ../:/workspace
+    networks:
+      - mcp
+    logging: *default-logging
+
+  structurizr:
+    # Structurizr "local" mode — the human-facing web UI for the C4 model
+    # (companion to structurizr-mcp: the MCP server is for the agents, this is
+    # for *you*). It renders a single workspace.dsl straight from disk, which is
+    # exactly what the architecture phase authors. The consolidated
+    # `structurizr/structurizr` image needs a subcommand: with NO command it
+    # only prints its CLI usage banner and exits (the original bug); `local` is
+    # the Lite-equivalent server (the standalone `structurizr/lite` image is
+    # deprecated and now just prints a migration notice and exits). Browse the
+    # diagrams at http://localhost:8080 once the stacks are up
+    # (bash infra/bootstrap.sh). File-based storage on disk; no remote
+    # Structurizr cloud/server. Docs: https://docs.structurizr.com/local
+    image: structurizr/structurizr
+    init: true
+    command: ["local"]
+    # The image runs as a distroless nonroot user (UID 65532) and must *write*
+    # the rendered workspace.json + .structurizr/ back into the mounted dir.
+    # That dir is owned by the host user, so run the container as the host user
+    # (exported by infra/bootstrap.sh). Defaults to root when unset so a raw
+    # `docker compose up` still has write access; bootstrap.sh sets the real
+    # UID/GID so the rendered files land host-owned, not root-owned.
+    user: "${ADLC_UID:-0}:${ADLC_GID:-0}"
+    ports:
+      # Host side is per-project (ADR-0035); bootstrap.sh prints the URL.
+      - "${ADLC_STRUCTURIZR_UI_HOST_PORT:-8080}:8080"
+    volumes:
+      # Data dir is /usr/local/structurizr; local mode reads `workspace.dsl`
+      # from the root of that dir and renders it live (writing the derived
+      # workspace.json back there — gitignored; workspace.dsl stays the ground
+      # truth). Path is relative to the project dir (infra/), so ../architecture
+      # is <project>/architecture, where the architecture phase writes the DSL.
+      - ../architecture:/usr/local/structurizr
+    networks:
+      - mcp
+    restart: unless-stopped
+    logging: *default-logging
+
+  postgres-mcp:
+    # crystaldba/postgres-mcp — community Postgres MCP server with SSE
+    # transport (serves /sse on 8000). Connects to the dev DB via the shared
+    # `backend` network. Upstream docs: https://github.com/crystaldba/postgres-mcp
+    image: crystaldba/postgres-mcp:latest
+    init: true
+    command:
+      - "--transport"
+      - "sse"
+      - "--sse-host"
+      - "0.0.0.0"
+      - "--sse-port"
+      - "8000"
+      - "--access-mode"
+      - "restricted"
+    environment:
+      DATABASE_URI: postgres://app:app@db:5432/app_dev
+    ports:
+      # Host side is per-project (ADR-0035); the project .mcp.json points at it.
+      - "${ADLC_POSTGRES_MCP_HOST_PORT:-3001}:8000"
+    networks:
+      - mcp
+      - backend
+    logging: *default-logging
+
+  playwright-mcp:
+    # Microsoft official Playwright MCP. Serves /mcp on the given --port.
+    # Headless by default. Reaches the dev backend at http://backend:8000 on
+    # the shared `backend` network. Upstream: https://github.com/microsoft/playwright-mcp
+    image: mcr.microsoft.com/playwright/mcp:latest
+    init: true
+    command:
+      - "--port"
+      - "8931"
+      - "--host"
+      - "0.0.0.0"
+      # The server enforces a Host-header (DNS-rebinding) check that defaults to
+      # its bound host:port (localhost:8931). Because clients reach it via the
+      # remapped host port (localhost:3002), that check rejects them with
+      # HTTP 403 "Access is only allowed at localhost:8931" (which Claude Code
+      # then misreads as an auth challenge). `*` disables the host check — safe
+      # here: the container is only reachable on the local machine.
+      # NOTE: this does NOT cover the *separate* HTTP 406 seen if a human presses
+      # "re-authenticate" in Claude Code — that fires an OAuth probe at /mcp
+      # without the streamable-HTTP `Accept: application/json, text/event-stream`
+      # header, which the server rejects. These MCPs use no auth; the 406 is a
+      # client-side artefact handled by guidance (docs/workflow.md), not config.
+      - "--allowed-hosts"
+      - "*"
+      - "--headless"
+      - "--browser"
+      - "chromium"
+    ports:
+      # Host side is per-project (ADR-0035); the project .mcp.json points at it.
+      - "${ADLC_PLAYWRIGHT_MCP_HOST_PORT:-3002}:8931"
+    networks:
+      - mcp
+      - backend
+    # Mount test-artifacts target so failure screenshots/traces are
+    # accessible from the host. Path matches services/frontend/e2e/test-artifacts/.
+    volumes:
+      - ../services/frontend/e2e/test-artifacts:/artifacts
+    logging: *default-logging
+
+  # --- AgentOps observability ----------------------------------------------
+
+  agentops-tail:
+    # Optional AgentOps aggregator. Tails the local trace JSONL for live
+    # inspection. Not required for /evaluate to work — the command reads the
+    # JSONL directly. No external exporter — pure local stdout tail.
+    #
+    # OFF by default (profile: tail). It is a pure stdout firehose — it
+    # re-prints existing trace content on every start — so leaving it always-on
+    # under `restart: unless-stopped` is a steady source of container-log
+    # growth. Opt in only when you want a live tail:
+    #   docker compose ... --profile tail up -d agentops-tail
+    #   docker compose ... logs -f agentops-tail
+    image: python:3.12-slim
+    init: true
+    profiles: ["tail"]
+    working_dir: /work
+    command: python /work/ingest.py
+    volumes:
+      - ../.claude/logs:/logs:ro
+      - ./adlc/ingest.py:/work/ingest.py:ro
+    environment:
+      TRACE_FILE: /logs/agent-trace.jsonl
+      POLL_SECONDS: "2"
+    restart: unless-stopped
+    logging: *default-logging
+
+  # OTEL collector — receives Claude Code telemetry over OTLP and writes
+  # metrics + logs to .claude/logs/otel-*.jsonl for offline cost audit.
+  # Claude Code emits:
+  #   claude_code.cost.usage      (USD, attributes include model)
+  #   claude_code.token.usage     (counts by type: input/output/cacheRead/cacheCreation)
+  #   claude_code.session.count
+  #   claude_code.lines_of_code.count
+  #   claude_code.commit.count
+  #   claude_code.code_edit_tool.decision
+  #   claude_code.active_time.total
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:latest
+    init: true
+    profiles: ["", "default"]
+    command: ["--config=/etc/otel/config.yaml"]
+    # The contrib image runs as a nonroot user (UID 10001), but it must *write*
+    # the rendered otel-*.jsonl into the bind-mounted `../.claude/logs`, which
+    # bootstrap.sh pre-creates owned by the host user (mode 755). A 10001 vs
+    # host-uid mismatch → "permission denied" creating the logfile. So run as the
+    # host user (exported by bootstrap.sh), same fix as `structurizr` above;
+    # defaults to root when unset so a bare `docker compose up` still has write
+    # access, and bootstrap.sh sets the real UID/GID so the files land host-owned.
+    user: "${ADLC_UID:-0}:${ADLC_GID:-0}"
+    volumes:
+      - ./adlc/otel-collector-config.yaml:/etc/otel/config.yaml:ro
+      - ../.claude/logs:/logs
+    ports:
+      # Host side is per-project (ADR-0035); .claude/settings.json's
+      # OTEL_EXPORTER_OTLP_ENDPOINT is set to the allocated gRPC port.
+      # OTLP gRPC (preferred)
+      - "${ADLC_OTLP_GRPC_HOST_PORT:-4317}:4317"
+      # OTLP HTTP
+      - "${ADLC_OTLP_HTTP_HOST_PORT:-4318}:4318"
+    restart: unless-stopped
+    logging: *default-logging
+
+  # Opt-in central collector (profile: central). Forwards metrics + scrubbed
+  # trace events + project_snapshot to an external OTLP/HTTP endpoint (consumer
+  # out of framework scope) per ADR-0004. Same ports as the default collector — run exactly one. Reads
+  # AGENTIC_CENTRAL_* from .env (copy .env.example). Off unless the endpoint
+  # is set. The base config (default collector) is unchanged.
+  otel-collector-central:
+    image: otel/opentelemetry-collector-contrib:latest
+    init: true
+    profiles: ["central"]
+    command: ["--config=/etc/otel/config.central.yaml"]
+    # Same host-user fix as the default otel-collector above — it writes
+    # otel-*.jsonl into the host-owned ../.claude/logs bind mount.
+    user: "${ADLC_UID:-0}:${ADLC_GID:-0}"
+    env_file:
+      - adlc/.env
+    volumes:
+      - ./adlc/otel-collector-config.central.yaml:/etc/otel/config.central.yaml:ro
+      - ../.claude/logs:/logs
+    ports:
+      # Same per-project host ports as the default collector (run exactly one).
+      - "${ADLC_OTLP_GRPC_HOST_PORT:-4317}:4317"
+      - "${ADLC_OTLP_HTTP_HOST_PORT:-4318}:4318"
+    restart: unless-stopped
+    logging: *default-logging
+
+networks:
+  mcp:
+    driver: bridge
+  backend:
+    # Shared with docker-compose.dev.yml. When this stack is launched together
+    # with the dev stack in the same Docker Compose invocation, the same-named
+    # `backend` networks are merged, so postgres-mcp/playwright-mcp can reach
+    # the dev `db` and `backend` services. Launch via infra/bootstrap.sh.
+    driver: bridge

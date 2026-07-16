@@ -1,0 +1,28 @@
+@import '~bootstrap/scss/_functions';
+@import '~bootstrap/scss/_variables';
+@import '~bootstrap/scss/mixins/_breakpoints';
+
+.page {
+  height: 100vh;
+}
+
+.page:not(#landing-page) {
+  margin-bottom: 8vh;
+}
+
+// top navbar
+.page-padding-top {
+  padding-top: 10vh !important;
+}
+
+
+@media (max-width: map-get($grid-breakpoints, sm)) {
+  .page {
+    height: 93vh;
+  }
+}
+
+.absolut-container {
+  position: relative;
+  height: 100%;
+}

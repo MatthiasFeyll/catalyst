@@ -1,0 +1,41 @@
+{
+  "name": "feyll_lookup",
+  "version": "1.0.0",
+  "description": "Matthias Feyll personal web page",
+  "author": "matthias feyll",
+  "license": "ISC",
+  "homepage": "https://matthiasfeyll.de",
+  "readme": "https://gitlab.com/M-Felly/feyll_lookup#README",
+  "scripts": {
+    "watch": "encore dev --watch",
+    "build-dev": "encore dev",
+    "build-prod": "encore production",
+    "test": "jest"
+  },
+  "devDependencies": {
+    "@babel/preset-env": "^7.11.5",
+    "@babel/preset-typescript": "^7.10.4",
+    "@symfony/webpack-encore": "^0.31.0",
+    "babel-plugin-transform-class-properties": "^6.24.1",
+    "bulma": "^0.9.0",
+    "core-js": "^3.6.5",
+    "dotenv": "^8.2.0",
+    "fork-ts-checker-webpack-plugin": "^5.1.0",
+    "jest": "^26.4.2",
+    "node-sass": "^4.14.1",
+    "path": "^0.12.7",
+    "sass-loader": "^10.0.1",
+    "source-map": "^0.7.3",
+    "ts-loader": "^8.0.3",
+    "typescript": "^4.0.2",
+    "webpack-notifier": "^1.8.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@gitlab.com/M-Felly/feyll_lookup.git"
+  },
+  "bugs": {
+    "url": "https://gitlab.com/M-Felly/feyll_lookup/issues"
+  },
+  "dependencies": {}
+}

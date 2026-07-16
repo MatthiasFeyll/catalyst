@@ -1,0 +1,58 @@
+stages:
+  - build
+  - test
+  - deploy
+
+variables:
+  SHARED_PATH: /builds/$CI_PROJECT_PATH/shared
+
+.global: &global_script
+  ## copy build to shadow folder to get rid of cascading mounting issues related to #https://gitlab.com/gitlab-org/gitlab-foss/-/issues/41227
+  - mkdir -p ${SHARED_PATH}
+  - cp -r ./ ${SHARED_PATH}
+
+  ## set aliases for easy docker access (equivalent to .alias on a local environment [direnv is not working on gitlab-runner docker executor])
+  - shopt -s expand_aliases
+  - alias npm='docker run -i -v "$SHARED_PATH:/mnt" -w /mnt node npm "$@"'
+  - alias php='docker exec -i --user $(id -u):$(id -g) -w /mnt feyll_lookup_php "$@"'
+
+############################################
+#                 Build
+############################################
+npm:
+  stage: build
+  before_script:
+    - *global_script
+  script:
+    - docker-compose -f docker/docker-compose.yml up -d --no-deps node
+    - npm install
+    - npm rebuild node-sass
+    - npm run build-prod
+
+############################################
+#                 Test
+############################################
+jest:
+  stage: test
+  before_script:
+    - *global_script
+  script:
+    - npm run test
+  after_script:
+    - make remove
+
+############################################
+#                 Deploy
+############################################
+production:
+  stage: deploy
+  before_script:
+    - *global_script
+    - cd ${SHARED_PATH}
+    - chmod +x ./deploy/deploy.sh
+  script:
+    - ./deploy/deploy.sh ${username} ${host} ${instance} ${ssh_key}
+  only:
+    - master
+  when: manual
+  allow_failure: false

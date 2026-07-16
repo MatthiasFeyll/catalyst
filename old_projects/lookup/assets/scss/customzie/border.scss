@@ -1,0 +1,10 @@
+@import "../color";
+
+.has-border-color-primary {
+  border: 1px solid $primary !important;
+}
+
+.has-border-color-grey {
+  border: 1px solid $grey !important;
+}
+

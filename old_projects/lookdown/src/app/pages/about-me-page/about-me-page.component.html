@@ -1,0 +1,29 @@
+<div class="d-none d-lg-block absolut-container float-start">
+  <img src="/assets/images/aboutMe_background2.png" alt="">
+  <div id="desktop-image-color-container" class="bg-primary"></div>
+</div>
+
+<div class="container">
+  <div>
+    <div id="about-me-text" class="text-secondary" [class.collapsed]="collapsed" (click)="collapseText()">
+      <span [class.d-none]="!responsiveService.isDesktop()" class="text-secondary">Hi, <br><br></span>
+      I'm Matthias and I'm studying computer science in the fifth semester in Darmstadt. During my study I wanna enhance myself doing practical work and get more
+      insights and experience of the great world of information technology.
+      <div class="text-secondary d-inline-block d-lg-inline" [class.collapsed]="collapsed">
+        Therefore I've worked the last semesters for the Fraunhofer Institute on a software to detect vulnerabilities on mobile device apps that can get exploited by hackers.
+        I'm also tutor in my university for programming and further nerd stuff ;)<br>
+
+        Not only in my carrier but also in the "real world" I wanna broaden my horizons exploring new countries and travel around with my motor bike or backpacking.
+        In my free time I do a lot of sports like running, bouldering and snowboarding.
+      </div>
+    </div>
+
+    <button class="btn btn-secondary d-none d-md-block float-end mt-5 p-lg-3 px-lg-4 " (click)="scrollService.scrollToPage(scrollService.pageNames.SKILLS_PAGE)">See my skills</button>
+
+    <div id="about-me-read-more-container" class="d-block d-lg-none" (click)="collapseText()">
+      <p class="font-bold"><ng-container *ngIf="!collapsed; else readLess">Read more</ng-container><span>&nbsp;&#8594;</span></p>
+      <ng-template #readLess>Read less</ng-template>
+    </div>
+  </div>
+</div>
+

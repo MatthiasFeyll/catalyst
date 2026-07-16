@@ -1,0 +1,38 @@
+@import "/src/styles/colors";
+@import '~bootstrap/scss/_functions';
+@import '~bootstrap/scss/_variables';
+@import '~bootstrap/scss/mixins/_breakpoints';
+@import '/src/styles/breakpoints';
+
+@media (max-width: map-get($grid-breakpoints, lg)) {
+  .mt-3 {
+    margin-top: 1.9rem !important;
+  }
+
+  button {
+    font-size: inherit !important;
+  }
+
+  p {
+    font-size: 0.8em;
+  }
+}
+
+@media (max-width: $small-mobiles-breakpoint) {
+  label, input {
+    font-size: 0.9em;
+  }
+
+  textarea {
+    height: 10vh;
+  }
+
+  input {
+    height: 80%;
+  }
+
+
+  #mobile-imprint > p{
+    font-size: 0.7em;
+  }
+}

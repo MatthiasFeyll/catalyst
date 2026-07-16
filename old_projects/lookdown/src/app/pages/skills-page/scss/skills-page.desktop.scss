@@ -1,0 +1,95 @@
+@import '~bootstrap/scss/_variables';
+
+@media (min-width: map-get($grid-breakpoints, lg)) {
+  .categories {
+    margin-right: 1em;
+
+    i, span {
+      font-size: 1.5em;
+    }
+
+    &:hover {
+      cursor: pointer;
+    }
+  }
+
+  #skill-container {
+    i, p {
+      font-size: 1.5em;
+    }
+
+    max-height: 48vh;
+    min-height: 48vh;
+
+    &>div {
+      align-items: center;
+    }
+
+    & > div:hover {
+      background-color: lighten(map-get($theme-colors, "dark"), 15);
+      // shift stars to the left
+      i {
+        margin-left: 0.25em;
+      }
+    }
+  }
+
+  .container {
+    margin: auto !important;
+    height: fit-content;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 4vh;
+
+    padding-top: 0 !important;
+
+    width: 70%;
+  }
+
+  #skills-page-wrapper {
+    z-index: 2;
+    position: relative;
+    width: 60vw;
+    height: 100vh;
+
+    background-image: linear-gradient(
+        rgba(map_get($theme-colors, 'dark') ,0.7),
+        rgba(map_get($theme-colors, 'dark'), 0.8)
+    ), url("/assets/images/skills_background.png");
+
+    background-size: 70%;
+    background-position-y: 51vh;
+    background-repeat: no-repeat;
+  }
+}
+
+.absolut-container {
+  z-index: 0;
+
+  #desktop-image-color-container {
+    width: 30vw;
+
+    position: absolute;
+    top: 35vh;
+    bottom: 0;
+    right: 0;
+
+    align-items: center;
+
+    h2 {
+      font-size: 2.8em;
+    }
+
+    div:first-child {
+      width: 100%;
+      padding: 4.5em;
+    }
+
+    button {
+      margin-top: 6em;
+      border-radius: 5px;
+    }
+  }
+}
