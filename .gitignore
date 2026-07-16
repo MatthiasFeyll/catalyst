@@ -57,6 +57,11 @@ infra/.prod-parity-result.log
 # verdict file (pre-0.47.0 driver; kept ignored for the transition window).
 .adlc/turn.json
 .adlc/.turn-verdict.json
+# Implement-loop screenshot self-review renders (ADR-0049): the full-page PNGs the
+# `implementation` agent captures + Reads to critique its own render (per feature in
+# the loop + at milestone-end). Persisted for the session (regenerable), never
+# committed — a local reflection artifact, not a project deliverable (owner decision).
+.adlc/screenshots/
 
 # Env / secrets
 .env

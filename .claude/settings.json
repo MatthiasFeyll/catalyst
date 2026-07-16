@@ -23,7 +23,7 @@
     "AGENTIC_PROJECT_SLUG": "catalyst",
     "AGENTIC_ORG_SLUG": "commerzreal",
     "AGENTIC_DEVELOPER_HASH": "07741db21a9f66ec",
-    "AGENTIC_FRAMEWORK_VERSION": "0.53.2"
+    "AGENTIC_FRAMEWORK_VERSION": "0.58.0"
   },
 
   "permissions": {

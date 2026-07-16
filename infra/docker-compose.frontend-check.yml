@@ -70,6 +70,46 @@ services:
     networks:
       - backend
 
+  # Render-capture for the implement-loop SCREENSHOT SELF-REVIEW (ADR-0049) — the
+  # sibling of `smoke`. NOT a gate and NOT an assertion: it makes no pass/fail claim
+  # about rendered quality; it produces full-page PNGs the `implementation` agent
+  # Reads (multimodal) to critique its own render (ADR-0040 principles + gestalt) and
+  # iterate BEFORE hand-off — the see-and-iterate loop the framework lacked (cause #1,
+  # docs/design-quality-workpackages-2026-07.md). Reuses the same e2e image + dev
+  # network as `smoke`; captures each route × committed breakpoint against the Vite
+  # dev server (http://frontend:5173, ADR-0022). Screenshots land on the project's
+  # .adlc/screenshots/ mount (gitignored — persisted, never committed, ADR-0049).
+  #
+  # USAGE (dev stack up first — bash infra/bootstrap.sh):
+  #   SHOT_PATHS="/projects /projects/gallery" SHOT_SUBDIR="milestone-2/projects" \
+  #     docker compose --project-directory infra -f infra/docker-compose.frontend-check.yml \
+  #       run --rm screenshot
+  # Fail-soft: advisory, never a halt — a down stack / failed route is skipped + noted.
+  screenshot:
+    build:
+      context: .
+      dockerfile: Dockerfile.e2e
+    image: ${COMPOSE_PROJECT_NAME:-infra}-e2e:local
+    logging: *default-logging
+    working_dir: /shots
+    environment:
+      SHOT_BASE_URL: http://frontend:5173
+      # The caller passes the feature's routes (+ `/`) and the <milestone>/<feature>
+      # out subdir; defaults capture just the boot route into the mount root.
+      SHOT_PATHS: ${SHOT_PATHS:-/}
+      SHOT_SUBDIR: ${SHOT_SUBDIR:-}
+      # Desktop + mobile committed breakpoints (ADR-0040 reading-measure/responsive).
+      SHOT_WIDTHS: ${SHOT_WIDTHS:-1440,390}
+      SHOT_OUT_DIR: /shots/out
+    volumes:
+      # Framework-owned script mounted read-only; PNGs + the manifest go to the
+      # writable .adlc/screenshots/ bind (created if absent; gitignored — ADR-0049).
+      - ./screenshot-routes.py:/shots/screenshot-routes.py:ro
+      - ../.adlc/screenshots:/shots/out
+    command: ["python", "screenshot-routes.py"]
+    networks:
+      - backend
+
 networks:
   # Join the network the dev stack already created (same resolution as the e2e
   # harness): <COMPOSE_PROJECT_NAME>_backend from infra/.env, falling back to
