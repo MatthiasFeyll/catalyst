@@ -1,5 +1,14 @@
 # FEAT-007 — Evolution-Story
 
+> **Revidiert via /design-Re-Entry 2026-07-16, Owner-approved (DD2):** **Kuratierte Screenshots
+> sind jetzt die Primärdarstellung** jeder Generation (Desktop UND mobil); „Live öffnen" ist ein
+> **externer Link** (neuer Tab); die **Live-iframe-Einbettung ist optional** und nur dort zulässig,
+> wo sie stabil ist — nicht mehr gefordert. Grund: Live-iframes der Alt-Seiten sind fragil (Laden,
+> `X-Frame-Options`/CSP, tote Apps) und holen fremdes Alt-Design in die neue Ästhetik; der
+> Screenshot war realistisch ohnehin der Normalfall. Die Fallback-Ketten vereinfachen sich: der
+> Screenshot ist der **Ausgangszustand**, kein Fallback. IDs stabil gehalten; RV-08 bewusst
+> entschärft (siehe unten), nicht gelöscht.
+
 ## Ziel / Intent
 
 Ein eigenes narratives Element: die **vier Generationen** der Personal Page als Beleg für
@@ -9,58 +18,65 @@ vollständig KI-geschriebene Generation.
 
 ## Scope
 
-**In:** Narrativ der vier Generationen; Einbettung/Vorschau der Alt-Apps über einen
-**Einbettungs-Kontrakt** (konfigurierbare URL + Verfügbarkeits-Fallback); Verweis auf das
-öffentliche catalyst-Repository.
+**In:** Narrativ der vier Generationen; **kuratierte Screenshots** jeder Generation im
+„Museums-Rahmen" (Desktop und mobil) als Primärdarstellung; **„Live öffnen" als externer Link**
+(neuer Tab) für erreichbare Alt-Apps; **optionale** Live-iframe-Einbettung über einen
+**Einbettungs-Kontrakt** (konfigurierbare URL) nur dort, wo sie sich als stabil erweist; Verweis
+auf das öffentliche catalyst-Repository.
 **Out:** Wiederbelebung, Hosting oder Bereitstellung von lookup/lookdown (separate Arbeit
-außerhalb catalyst). catalyst trifft **keine** Annahme über deren Hosting.
+außerhalb catalyst). catalyst trifft **keine** Annahme über deren Hosting. Eine **verpflichtende**
+Live-Einbettung ist bewusst nicht gefordert (DD2).
 
 ## Funktionale Anforderungen
 
 - **FR-007-01** — Die vier Generationen (lookup, lookdown, median, catalyst) werden als
   **kontinuierliches Lern-Narrativ** dargestellt.
-- **FR-007-02** — Auf **Desktop** wird eine Generation in einem eingebetteten „Museums-Rahmen"
-  live gezeigt; auf **Mobil** als **Screenshot-Galerie** mit „in neuem Tab öffnen".
-- **FR-007-03** — Kann eine Generation **nicht live eingebettet** werden, wird ein
-  **Screenshot-Fallback** gezeigt (kein defekter/leerer Rahmen). Das gilt für **zwei
-  unterscheidbare Zustände** mit **derselben** Fallback-Darstellung:
-  - (a) die Alt-Seite ist **nicht erreichbar** (down/Netzwerkfehler);
-  - (b) die Alt-Seite antwortet, **verweigert aber das Framing** (z. B. per `X-Frame-Options` /
-    CSP `frame-ancestors`).
-  Da Cross-Origin-Introspektion des Frame-Inhalts nicht möglich ist, wird Zustand (b) über eine
-  **definierte Heuristik** erkannt (iframe-Lade-Timeout: erfolgt bis zum Timeout kein
-  erfolgreicher Ladevorgang, greift der Screenshot-Fallback).
-- **FR-007-04** — Die Einbettungs-URL ist **je Generation konfigurierbar**; es gibt keine
-  festverdrahtete Hosting-Annahme.
+- **FR-007-02** *(geändert, DD2)* — Jede Generation wird auf **Desktop und Mobil** primär über
+  einen **kuratierten Screenshot** im „Museums-Rahmen" gezeigt. Für erreichbare Alt-Apps gibt es
+  einen **„Live öffnen"-Link**, der die Alt-App in einem **neuen Tab** öffnet (keine Pflicht zur
+  Einbettung).
+- **FR-007-03** *(geändert, DD2)* — Der **Screenshot ist der Ausgangszustand**, kein Fallback:
+  unabhängig davon, ob eine Generation erreichbar ist, das Framing verweigert oder gar keine URL
+  hat, zeigt die Seite denselben kuratierten Screenshot — **nie** ein defekter/leerer Rahmen. Eine
+  Framing-/Erreichbarkeits-Heuristik ist damit **nicht mehr erforderlich**.
+- **FR-007-04** *(geändert, DD2)* — Die Einbettungs-URL bleibt **je Generation konfigurierbar**
+  (Einbettungs-Kontrakt) als **optionale** Fähigkeit; es gibt keine festverdrahtete
+  Hosting-Annahme. Eine konfigurierte URL speist den **„Live öffnen"-Link** und darf **optional**
+  eine Live-iframe-Einbettung dort ermöglichen, wo sie sich als stabil erweist.
 - **FR-007-05** — catalyst wird als **aktuelle, vollständig KI-geschriebene** Generation
   dargestellt, mit einem Link auf sein **öffentliches Repository** (Beleg der AI-written-Story).
 
 ## Edge Cases & Fehler-/Leer-Zustände
 
-- **App down / nicht erreichbar** → Screenshot-Fallback (`FR-007-03` (a)).
-- **Framing verweigert** (Alt-Seite antwortet, blockt Einbettung via `X-Frame-Options`/CSP
-  `frame-ancestors`) → **derselbe** Screenshot-Fallback, erkannt über iframe-Lade-Timeout
-  (`FR-007-03` (b)).
-- **Mobil** → Screenshot-Galerie statt Live-Einbettung (`FR-007-02`).
-- **Keine URL für eine Generation konfiguriert** → nur Screenshot, kein leerer Rahmen.
+- **Keine URL für eine Generation konfiguriert** → nur der kuratierte Screenshot, kein „Live
+  öffnen"-Link, kein leerer Rahmen.
+- **App down / nicht erreichbar** → der Screenshot (Ausgangszustand) bleibt stehen; ein „Live
+  öffnen"-Link kann ins Leere führen, bricht die Darstellung aber nicht (der Screenshot trägt).
+- **Framing verweigert** (Alt-Seite blockt Einbettung via `X-Frame-Options`/CSP) → gegenstandslos,
+  da Einbettung nur optional/stabil erfolgt; die Screenshot-Primärdarstellung ist unberührt.
+- **Mobil** → identische Screenshot-Primärdarstellung im Museums-Rahmen mit „Live öffnen" (neuer
+  Tab), inhaltliche Parität zu Desktop.
 
 ## Bestätigte Annahmen
 
-- Wiederbelebung von lookup/lookdown ist out of scope; catalyst konsumiert nur URL +
-  Screenshot-Fallback (C1/C2).
+- Wiederbelebung von lookup/lookdown ist out of scope; catalyst konsumiert nur (optionale) URL +
+  kuratierten Screenshot (C1/C2).
 - Repo ist öffentlich und wird auf der Seite verlinkt (B1c).
-- **Betriebsvoraussetzung (RV-08):** Für die **Live-Einbettung** müssen die eigenen Alt-Apps
-  catalyst per CSP `frame-ancestors` freigeben. Das liegt in **Owner-Hand** (Anpassung der
-  Alt-Apps); ihre Wiederbelebung/Anpassung ist **out of scope** für catalyst. Ohne Freigabe
-  greift dauerhaft der Screenshot-Fallback (`FR-007-03` (b)) — kein Fehlerzustand.
+- **RV-08 (bewusst entschärft, DD2):** Die frühere **Betriebsvoraussetzung**, dass die eigenen
+  Alt-Apps catalyst per CSP `frame-ancestors` für die **Live-Einbettung** freigeben müssen, ist mit
+  der Umstellung auf **Screenshot-primär** weitgehend **gegenstandslos**. Die Live-Einbettung ist
+  nur noch optional; ohne Freigabe/ohne stabile Einbettung bleibt schlicht der Screenshot stehen —
+  kein Fehlerzustand, keine Owner-Vorbedingung mehr für die Kern-Darstellung. Der Hinweis bleibt
+  als Kontext dokumentiert (nicht gelöscht), falls die optionale Einbettung später aktiviert wird.
 
 ## Acceptance Criteria
 
 - Alle vier Generationen erscheinen im Narrativ; catalyst ist als KI-geschrieben ausgewiesen und
   verlinkt sein öffentliches Repository.
-- Bei nicht erreichbarer eingebetteter App **und** bei verweigertem Framing (Timeout ohne
-  erfolgreiches Laden) erscheint jeweils derselbe Screenshot-Fallback statt eines Fehlers.
-- Auf Mobil erscheint die Screenshot-Galerie mit „in neuem Tab öffnen".
+- Jede Generation zeigt auf Desktop und Mobil ihren **kuratierten Screenshot** im Museums-Rahmen;
+  für erreichbare Alt-Apps erscheint ein **„Live öffnen"-Link** (neuer Tab).
+- In **keinem** Zustand (nicht erreichbar, Framing verweigert, keine URL) erscheint ein defekter
+  oder leerer Rahmen — der Screenshot trägt die Darstellung durchgehend.
 
 ## Traces
 
